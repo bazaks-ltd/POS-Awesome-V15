@@ -773,10 +773,10 @@ export default {
 						color: "error",
 					});
 				} else {
-					this.eventBus.emit("show_message", {
-						title: __("Stock is lower than requested. Proceeding may create negative stock."),
-						color: "warning",
-					});
+					// this.eventBus.emit("show_message", {
+					// 	title: __("Stock is lower than requested. Proceeding may create negative stock."),
+					// 	color: "warning",
+					// });
 				}
 			}
 

@@ -1344,38 +1344,38 @@ export default {
 				return;
 			}
 			// Validate stock availability before submitting
-			if (!isOffline()) {
-				try {
-					const itemsToCheck = this.invoice_doc.items.filter((it) => !it.is_bundle);
-					const stockCheck = await frappe.call({
-						method: "posawesome.posawesome.api.invoices.validate_cart_items",
-						args: { items: JSON.stringify(itemsToCheck) },
-					});
-					if (stockCheck.message && stockCheck.message.length) {
-						const msg = stockCheck.message
-							.map(
-								(e) =>
-									`${e.item_code} (${e.warehouse}) - ${this.formatFloat(e.available_qty)}`,
-							)
-							.join("\n");
-						const blocking =
-							!this.stock_settings.allow_negative_stock || this.blockSaleBeyondAvailableQty;
-						this.eventBus.emit("show_message", {
-							title: blocking
-								? __("Insufficient stock:\n{0}", [msg])
-								: __("Stock is lower than requested:\n{0}", [msg]),
-							color: blocking ? "error" : "warning",
-						});
-						if (blocking) {
-							frappe.utils.play_sound("error");
-							this.loading = false;
-							return;
-						}
-					}
-				} catch (e) {
-					console.error("Stock validation failed", e);
-				}
-			}
+			// if (!isOffline()) {
+			// 	try {
+			// 		const itemsToCheck = this.invoice_doc.items.filter((it) => !it.is_bundle);
+			// 		const stockCheck = await frappe.call({
+			// 			method: "posawesome.posawesome.api.invoices.validate_cart_items",
+			// 			args: { items: JSON.stringify(itemsToCheck) },
+			// 		});
+			// 		if (stockCheck.message && stockCheck.message.length) {
+			// 			const msg = stockCheck.message
+			// 				.map(
+			// 					(e) =>
+			// 						`${e.item_code} (${e.warehouse}) - ${this.formatFloat(e.available_qty)}`,
+			// 				)
+			// 				.join("\n");
+			// 			const blocking =
+			// 				!this.stock_settings.allow_negative_stock || this.blockSaleBeyondAvailableQty;
+			// 			this.eventBus.emit("show_message", {
+			// 				title: blocking
+			// 					? __("Insufficient stock:\n{0}", [msg])
+			// 					: __("Stock is lower than requested:\n{0}", [msg]),
+			// 				color: blocking ? "error" : "warning",
+			// 			});
+			// 			if (blocking) {
+			// 				frappe.utils.play_sound("error");
+			// 				this.loading = false;
+			// 				return;
+			// 			}
+			// 		}
+			// 	} catch (e) {
+			// 		console.error("Stock validation failed", e);
+			// 	}
+			// }
 
 			// Proceed to submit the invoice
 			this.loading = true;
