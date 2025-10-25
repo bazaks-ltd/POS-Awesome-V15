@@ -167,27 +167,27 @@
 						</v-col>
 						<v-col cols="12" class="dynamic-margin-xs">
 							<div class="settings-container">
-								<v-btn
-									density="compact"
-									variant="text"
-									color="primary"
-									prepend-icon="mdi-cog-outline"
-									@click="toggleItemSettings"
-									class="settings-btn"
-								>
-									{{ __("Settings") }}
-								</v-btn>
-								<v-spacer></v-spacer>
-								<v-btn
-									density="compact"
-									variant="text"
-									color="primary"
-									prepend-icon="mdi-refresh"
-									@click="forceReloadItems"
-									class="settings-btn"
-								>
-									{{ __("Reload Items") }}
-								</v-btn>
+							<v-btn
+								density="compact"
+								variant="text"
+								prepend-icon="mdi-cog-outline"
+								@click="toggleItemSettings"
+								class="settings-btn"
+								style="color: #e51401 !important;"
+							>
+								{{ __("Settings") }}
+							</v-btn>
+							<v-spacer></v-spacer>
+							<v-btn
+								density="compact"
+								variant="text"
+								prepend-icon="mdi-refresh"
+								@click="forceReloadItems"
+								class="settings-btn"
+								style="color: #e51401 !important;"
+							>
+								{{ __("Reload Items") }}
+							</v-btn>
 
 								<v-dialog v-model="show_item_settings" max-width="400px">
 									<v-card>
@@ -251,15 +251,15 @@
 											>
 											</v-text-field>
 										</v-card-text>
-										<v-card-actions class="pa-4 pt-0">
-											<v-btn color="error" variant="text" @click="cancelItemSettings"
-												>{{ __("Cancel") }}
-											</v-btn>
-											<v-spacer></v-spacer>
-											<v-btn color="primary" variant="tonal" @click="applyItemSettings"
-												>{{ __("Apply") }}
-											</v-btn>
-										</v-card-actions>
+									<v-card-actions class="pa-4 pt-0">
+										<v-btn color="error" variant="text" @click="cancelItemSettings"
+											>{{ __("Cancel") }}
+										</v-btn>
+										<v-spacer></v-spacer>
+										<v-btn variant="tonal" @click="applyItemSettings" style="background-color: #e51401 !important; color: white !important;"
+											>{{ __("Apply") }}
+										</v-btn>
+									</v-card-actions>
 									</v-card>
 								</v-dialog>
 							</div>
@@ -379,7 +379,7 @@
 														{{
 															format_number(
 																item.actual_qty,
-																hide_qty_decimals ? 0 : 4,
+																hide_qty_decimals ? 0 : 2,
 															) || 0
 														}}
 													</span>
@@ -439,13 +439,13 @@
 										</div>
 									</div>
 								</template>
-								<template v-slot:item.actual_qty="{ item }">
-									<span
-										class="golden--text"
-										:class="{ 'negative-number': isNegative(item.actual_qty) }"
-										>{{ format_number(item.actual_qty, hide_qty_decimals ? 0 : 4) }}</span
-									>
-								</template>
+							<template v-slot:item.actual_qty="{ item }">
+								<span
+									class="golden--text"
+									:class="{ 'negative-number': isNegative(item.actual_qty) }"
+									>{{ format_number(item.actual_qty, hide_qty_decimals ? 0 : 2) }}</span
+								>
+							</template>
 							</v-data-table-virtual>
 						</div>
 					</v-col>
@@ -475,35 +475,35 @@
 						readonly
 					></v-text-field>
 				</v-col>
-				<v-col cols="3" class="dynamic-margin-xs">
-					<v-btn-toggle v-model="items_view" color="primary" group density="compact" rounded>
-						<v-btn size="small" value="list">{{ __("List") }}</v-btn>
-						<v-btn size="small" value="card">{{ __("Card") }}</v-btn>
-					</v-btn-toggle>
-				</v-col>
-				<v-col cols="5" class="dynamic-margin-xs">
-					<v-btn
-						size="small"
-						block
-						color="warning"
-						variant="text"
-						@click="show_offers"
-						class="action-btn-consistent"
-					>
-						{{ offersCount }} {{ __("Offers") }}
-					</v-btn>
-				</v-col>
-				<v-col cols="4" class="dynamic-margin-xs">
-					<v-btn
-						size="small"
-						block
-						color="primary"
-						variant="text"
-						@click="show_coupons"
-						class="action-btn-consistent"
-						>{{ couponsCount }} {{ __("Coupons") }}</v-btn
-					>
-				</v-col>
+			<v-col cols="3" class="dynamic-margin-xs">
+				<v-btn-toggle v-model="items_view" group density="compact" rounded style="--v-btn-toggle-color: #e51401;">
+					<v-btn size="small" value="list" style="background-color: #e51401 !important; color: white !important;">{{ __("List") }}</v-btn>
+					<v-btn size="small" value="card" style="background-color: #e51401 !important; color: white !important;">{{ __("Card") }}</v-btn>
+				</v-btn-toggle>
+			</v-col>
+			<v-col cols="5" class="dynamic-margin-xs">
+				<v-btn
+					size="small"
+					block
+					variant="text"
+					@click="show_offers"
+					class="action-btn-consistent"
+					style="color: #fb1b07 !important;"
+				>
+					{{ offersCount }} {{ __("Offers") }}
+				</v-btn>
+			</v-col>
+			<v-col cols="4" class="dynamic-margin-xs">
+				<v-btn
+					size="small"
+					block
+					variant="text"
+					@click="show_coupons"
+					class="action-btn-consistent"
+					style="color: #e51401 !important;"
+					>{{ couponsCount }} {{ __("Coupons") }}</v-btn
+				>
+			</v-col>
 			</v-row>
 		</v-card>
 
@@ -3974,6 +3974,30 @@ export default {
 	letter-spacing: 0.02em;
 }
 
+.text-primary {
+	color: #e51401 !important;
+}
+
+/* Override Vuetify primary color classes with red palette */
+:deep(.bg-primary) {
+	background-color: #e51401 !important;
+}
+
+:deep(.text-primary) {
+	color: #e51401 !important;
+}
+
+:deep(.v-progress-linear__background.bg-primary),
+:deep(.v-progress-linear__buffer.bg-primary),
+:deep(.v-progress-linear__indeterminate .bg-primary),
+:deep(.v-progress-linear__determinate.bg-primary) {
+	background-color: #e51401 !important;
+}
+
+:deep(.v-field__loader .bg-primary) {
+	background-color: #e51401 !important;
+}
+
 /* Enhanced negative number styling for Arabic context */
 .negative-number {
 	color: #d32f2f !important;
@@ -4025,14 +4049,17 @@ export default {
 
 /* Enhanced Card View Grid Layout - Responsive and spacious */
 .items-card-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-	gap: 24px;
-	padding: 24px;
+	display: flex !important;
+	flex-wrap: wrap !important;
+	gap: 32px !important;
+	padding: 32px !important;
 	height: calc(100% - 80px);
 	overflow-y: auto;
 	scrollbar-width: thin;
 	scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+	justify-content: center !important;
+	align-items: stretch !important;
+	align-content: flex-start !important;
 	/* Performance optimizations */
 	contain: layout style;
 	will-change: scroll-position;
@@ -4042,33 +4069,29 @@ export default {
 /* Responsive adjustments for different screen sizes */
 @media screen and (max-width: 1400px) {
 	.items-card-grid {
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-		gap: 20px;
-		padding: 20px;
+		gap: 28px !important;
+		padding: 28px !important;
 	}
 }
 
 @media screen and (max-width: 1024px) {
 	.items-card-grid {
-		grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-		gap: 18px;
-		padding: 18px;
+		gap: 24px !important;
+		padding: 24px !important;
 	}
 }
 
 @media screen and (max-width: 768px) {
 	.items-card-grid {
-		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-		gap: 16px;
-		padding: 16px;
+		gap: 20px !important;
+		padding: 20px !important;
 	}
 }
 
 @media screen and (max-width: 600px) {
 	.items-card-grid {
-		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-		gap: 14px;
-		padding: 14px;
+		gap: 18px !important;
+		padding: 18px !important;
 	}
 }
 
@@ -4081,10 +4104,240 @@ export default {
 .virtual-scroller .items-card-grid {
 	height: auto;
 	overflow: visible;
+	width: 100%;
 }
 
 .virtual-scroller .vue-recycle-scroller__item-wrapper {
-	display: contents;
+	display: flex !important;
+	flex-wrap: wrap !important;
+	gap: 32px !important;
+	padding: 32px !important;
+	justify-content: center !important;
+	align-items: stretch !important;
+	align-content: flex-start !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+@media screen and (max-width: 1400px) {
+	.virtual-scroller .vue-recycle-scroller__item-wrapper {
+		gap: 28px !important;
+		padding: 28px !important;
+	}
+	div.vue-recycle-scroller__item-wrapper.items-card-grid > div.vue-recycle-scroller__item-view[style],
+	.virtual-scroller .vue-recycle-scroller__item-view {
+		flex: 1 1 260px !important;
+		min-width: 260px !important;
+	}
+}
+
+@media screen and (max-width: 1024px) {
+	.virtual-scroller .vue-recycle-scroller__item-wrapper {
+		gap: 24px !important;
+		padding: 24px !important;
+	}
+	div.vue-recycle-scroller__item-wrapper.items-card-grid > div.vue-recycle-scroller__item-view[style],
+	.virtual-scroller .vue-recycle-scroller__item-view {
+		flex: 1 1 240px !important;
+		min-width: 240px !important;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.virtual-scroller .vue-recycle-scroller__item-wrapper {
+		gap: 20px !important;
+		padding: 20px !important;
+	}
+	div.vue-recycle-scroller__item-wrapper.items-card-grid > div.vue-recycle-scroller__item-view[style],
+	.virtual-scroller .vue-recycle-scroller__item-view {
+		flex: 1 1 200px !important;
+		min-width: 200px !important;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.virtual-scroller .vue-recycle-scroller__item-wrapper {
+		gap: 18px !important;
+		padding: 18px !important;
+	}
+	div.vue-recycle-scroller__item-wrapper.items-card-grid > div.vue-recycle-scroller__item-view[style],
+	.virtual-scroller .vue-recycle-scroller__item-view {
+		flex: 1 1 160px !important;
+		min-width: 160px !important;
+	}
+}
+
+.virtual-scroller .vue-recycle-scroller__item-view {
+	position: static !important;
+	transform: none !important;
+	width: auto !important;
+	height: auto !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	left: auto !important;
+	top: auto !important;
+	inset: auto !important;
+	flex: 1 1 280px !important;
+	min-width: 280px !important;
+	max-width: calc(33.333% - 22px) !important;
+}
+
+/* Force flex layout on virtual scroller items - override ALL inline styles */
+.virtual-scroller .vue-recycle-scroller__item-view[style*="transform"],
+.virtual-scroller .vue-recycle-scroller__item-view[style*="translateY"],
+.virtual-scroller .vue-recycle-scroller__item-view[style*="translateX"],
+.virtual-scroller .vue-recycle-scroller__item-view[style] {
+	transform: none !important;
+	position: static !important;
+	left: auto !important;
+	top: auto !important;
+	right: auto !important;
+	bottom: auto !important;
+	width: auto !important;
+	height: auto !important;
+	min-height: 300px !important;
+	inset: auto !important;
+	flex: 1 1 280px !important;
+	min-width: 280px !important;
+	max-width: calc(33.333% - 22px) !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+/* Additional override for any deeply nested inline styles */
+.item-container .vue-recycle-scroller__item-view {
+	transform: none !important;
+	-webkit-transform: none !important;
+	position: static !important;
+	width: auto !important;
+	height: auto !important;
+	left: 0 !important;
+	top: 0 !important;
+	flex: 1 1 280px !important;
+	min-width: 280px !important;
+	max-width: calc(33.333% - 22px) !important;
+}
+
+.items-card-grid.item-container {
+	display: flex !important;
+	flex-wrap: wrap !important;
+	justify-content: center !important;
+	align-items: stretch !important;
+}
+
+/* Nuclear option - completely override all RecycleScroller positioning */
+.vue-recycle-scroller__item-wrapper.items-card-grid .vue-recycle-scroller__item-view {
+	transform: none !important;
+	-webkit-transform: none !important;
+	-moz-transform: none !important;
+	-ms-transform: none !important;
+	position: static !important;
+	left: auto !important;
+	top: auto !important;
+	width: auto !important;
+	height: auto !important;
+	flex: 1 1 280px !important;
+	min-width: 280px !important;
+	max-width: calc(33.333% - 22px) !important;
+}
+
+/* Ultra-specific attribute selectors to override inline styles */
+.vue-recycle-scroller__item-wrapper.items-card-grid > .vue-recycle-scroller__item-view[style*="width: 181px"],
+.vue-recycle-scroller__item-wrapper.items-card-grid > .vue-recycle-scroller__item-view[style*="width:181px"],
+.vue-recycle-scroller__item-wrapper.items-card-grid > .vue-recycle-scroller__item-view[style*="width"] {
+	width: auto !important;
+	flex: 1 1 280px !important;
+	min-width: 280px !important;
+	max-width: calc(33.333% - 22px) !important;
+}
+
+.vue-recycle-scroller__item-wrapper.items-card-grid > .vue-recycle-scroller__item-view[style*="transform"],
+.items-card-grid .vue-recycle-scroller__item-view[style*="translateY"],
+.items-card-grid .vue-recycle-scroller__item-view[style*="translateX"] {
+	transform: none !important;
+	-webkit-transform: none !important;
+	position: static !important;
+	left: 0 !important;
+	top: 0 !important;
+}
+
+/* Completely override all inline width/height on item views */
+[class*="vue-recycle-scroller__item-view"][style*="width"] {
+	width: auto !important;
+	flex: 1 1 280px !important;
+	min-width: 280px !important;
+	max-width: calc(33.333% - 22px) !important;
+}
+
+[class*="vue-recycle-scroller__item-view"][style*="height"] {
+	height: auto !important;
+	min-height: 300px !important;
+}
+
+/* Force wrapper to have padding and flexbox regardless of inline styles */
+div.vue-recycle-scroller__item-wrapper[class*="items-card-grid"],
+.vue-recycle-scroller__item-wrapper.items-card-grid[style],
+div.items-card-grid[style] {
+	display: flex !important;
+	flex-wrap: wrap !important;
+	padding: 32px !important;
+	gap: 32px !important;
+	justify-content: center !important;
+	align-items: stretch !important;
+	align-content: flex-start !important;
+	box-sizing: border-box !important;
+}
+
+/* Maximum specificity override for transforms */
+div.vue-recycle-scroller__item-wrapper.items-card-grid > div.vue-recycle-scroller__item-view[style] {
+	transform: none !important;
+	-webkit-transform: none !important;
+	position: static !important;
+	width: auto !important;
+	height: auto !important;
+	left: 0 !important;
+	top: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	flex: 1 1 280px !important;
+	min-width: 280px !important;
+	max-width: calc(33.333% - 22px) !important;
+}
+
+/* Override wrapper to ensure flexbox or grid works */
+.vue-recycle-scroller__item-wrapper.items-card-grid {
+	display: flex !important;
+	flex-wrap: wrap !important;
+	justify-content: center !important;
+	align-items: stretch !important;
+}
+
+.items-card-container .vue-recycle-scroller__item-wrapper {
+	display: flex !important;
+	flex-wrap: wrap !important;
+	justify-content: center !important;
+	align-items: stretch !important;
+}
+
+/* Force each card to take up grid cell properly with spacing */
+.items-card-grid > .vue-recycle-scroller__item-view {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+/* Additional wrapper overrides */
+.vue-recycle-scroller__item-wrapper.items-card-grid {
+	column-gap: 30px !important;
+	row-gap: 40px !important;
+}
+
+/* Ensure proper spacing between cards */
+.virtual-scroller .card-item-card {
+	margin: 0 !important;
+	width: 100% !important;
+	min-height: 300px;
+	display: flex !important;
+	flex-direction: column !important;
 }
 
 .items-card-grid::-webkit-scrollbar {
@@ -4112,7 +4365,8 @@ export default {
 	cursor: pointer;
 	display: flex;
 	flex-direction: column;
-	height: auto;
+	height: 100%;
+	width: 100%;
 	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 	will-change: transform;
 	backface-visibility: hidden;
@@ -4121,8 +4375,8 @@ export default {
 
 .card-item-card:hover {
 	transform: translate3d(0, -4px, 0);
-	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-	border-color: var(--primary-color, #1976d2);
+	box-shadow: 0 12px 32px rgba(229, 20, 1, 0.25);
+	border-color: #e51401;
 }
 
 .card-item-image-container {
@@ -4281,7 +4535,7 @@ export default {
 	gap: 4px;
 	font-weight: 700;
 	font-size: 1.05rem;
-	color: var(--primary-color, #1976d2);
+	color: var(--primary-color, #e51401);
 }
 
 @media screen and (max-width: 768px) {
@@ -4396,7 +4650,7 @@ export default {
 
 :deep([data-theme="dark"]) .card-item-card:hover,
 :deep(.v-theme--dark) .card-item-card:hover {
-	border-color: var(--primary-color, #90caf9);
+	border-color: var(--primary-color, #ff685a);
 }
 
 :deep([data-theme="dark"]) .card-item-image-container,
@@ -4450,7 +4704,7 @@ export default {
 	letter-spacing: 1px;
 	padding: 16px 20px;
 	transition: all 0.3s ease;
-	border-bottom: 3px solid #1976d2;
+	border-bottom: 3px solid #e51401;
 	background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);
 	color: #2c3e50;
 	position: sticky !important;

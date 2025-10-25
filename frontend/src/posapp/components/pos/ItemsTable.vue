@@ -34,12 +34,12 @@
 			<template v-slot:item.item_name="{ item }">
 				<div class="d-flex align-center">
 					<span>{{ item.item_name }}</span>
-					<v-chip v-if="item.is_bundle" color="secondary" size="x-small" class="ml-1">
-						{{ __("Bundle") }}
-					</v-chip>
-					<v-chip v-if="item.name_overridden" color="primary" size="x-small" class="ml-1">
-						{{ __("Edited") }}
-					</v-chip>
+				<v-chip v-if="item.is_bundle" color="secondary" size="x-small" class="ml-1">
+					{{ __("Bundle") }}
+				</v-chip>
+				<v-chip v-if="item.name_overridden" size="x-small" class="ml-1" style="background-color: #e51401 !important; color: white !important;">
+					{{ __("Edited") }}
+				</v-chip>
 					<v-icon
 						v-if="pos_profile.posa_allow_line_item_name_override && !item.posa_is_replace"
 						size="x-small"
@@ -163,15 +163,15 @@
 
 			<!-- Offer toggle -->
 			<template v-slot:item.posa_is_offer="{ item }">
-				<v-btn
-					size="x-small"
-					color="primary"
-					variant="tonal"
-					class="ma-0 pa-0"
-					@click.stop="toggleOffer(item)"
-				>
-					{{ item.posa_offer_applied ? __("Remove Offer") : __("Apply Offer") }}
-				</v-btn>
+			<v-btn
+				size="x-small"
+				variant="tonal"
+				class="ma-0 pa-0"
+				@click.stop="toggleOffer(item)"
+				style="background-color: #e51401 !important; color: white !important;"
+			>
+				{{ item.posa_offer_applied ? __("Remove Offer") : __("Apply Offer") }}
+			</v-btn>
 			</template>
 
 			<!-- Actions -->
@@ -1239,6 +1239,33 @@ export default {
 </script>
 
 <style scoped>
+/* Override Vuetify primary color classes with red palette */
+:deep(.bg-primary) {
+	background-color: #e51401 !important;
+}
+
+:deep(.text-primary) {
+	color: #e51401 !important;
+}
+
+:deep(.bg-info) {
+	background-color: #ff3927 !important;
+}
+
+:deep(.v-progress-linear__background.bg-primary),
+:deep(.v-progress-linear__buffer.bg-primary),
+:deep(.v-progress-linear__indeterminate .bg-primary),
+:deep(.v-progress-linear__determinate.bg-primary) {
+	background-color: #e51401 !important;
+}
+
+:deep(.v-progress-linear__background.bg-info),
+:deep(.v-progress-linear__buffer.bg-info),
+:deep(.v-progress-linear__indeterminate .bg-info),
+:deep(.v-progress-linear__determinate.bg-info) {
+	background-color: #ff3927 !important;
+}
+
 /* Modern table styling with clean design */
 .pos-table {
 	border-radius: 8px;

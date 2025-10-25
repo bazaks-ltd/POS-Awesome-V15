@@ -3,13 +3,13 @@
 		<v-tooltip location="bottom">
 			<template #activator="{ props }">
 				<div v-bind="props" class="cpu-meter-container">
-					<v-icon size="22" color="primary">mdi-server</v-icon>
+					<v-icon size="22" style="color: #e51401 !important;">mdi-server</v-icon>
 					<span class="cpu-current-lag">{{ cpuLag.toFixed(1) }} ms</span>
 				</div>
 			</template>
 			<div class="cpu-tooltip-content">
 				<div class="cpu-tooltip-title">
-					<v-icon size="16" color="primary" class="mr-1">mdi-server</v-icon>
+					<v-icon size="16" style="color: #e51401 !important;" class="mr-1">mdi-server</v-icon>
 					{{ __("Server Health") }}
 				</div>
 				<v-divider class="my-2" />

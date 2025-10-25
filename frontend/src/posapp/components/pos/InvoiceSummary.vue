@@ -359,6 +359,22 @@ export default {
 	color: var(--pos-text-primary) !important;
 }
 
+/* Override Vuetify primary color classes with red palette */
+:deep(.bg-primary) {
+	background-color: #e51401 !important;
+}
+
+:deep(.text-primary) {
+	color: #e51401 !important;
+}
+
+:deep(.v-progress-linear__background.bg-primary),
+:deep(.v-progress-linear__buffer.bg-primary),
+:deep(.v-progress-linear__indeterminate .bg-primary),
+:deep(.v-progress-linear__determinate.bg-primary) {
+	background-color: #e51401 !important;
+}
+
 /* Enhanced button styling with better performance */
 .summary-btn {
 	transition: all 0.2s ease !important;

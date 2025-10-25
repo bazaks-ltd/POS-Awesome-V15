@@ -21,13 +21,13 @@
 				:class="['pos-text-primary nav-icon', isRtl ? 'rtl-nav-icon' : 'ltr-nav-icon']"
 			/>
 
-			<v-img
-				:src="posLogo"
-				alt="POS Awesome"
-				:max-width="isMobile ? 24 : 32"
-				:class="['pos-navbar-logo', isRtl ? 'rtl-logo' : 'ltr-logo']"
-				loading="lazy"
-			/>
+		<v-img
+			:src="posLogo"
+			alt="BZK POS"
+			:max-width="isMobile ? 24 : 32"
+			:class="['pos-navbar-logo', isRtl ? 'rtl-logo' : 'ltr-logo']"
+			loading="lazy"
+		/>
 
 			<v-toolbar-title
 				@click="$emit('go-desk')"
@@ -41,13 +41,13 @@
 				:aria-label="__('Go to Frappe Desk')"
 				role="button"
 			>
-				<template v-if="isMobile">
-					<span class="pos-navbar-title-compact">{{ __("POS") }}</span>
-				</template>
-				<template v-else>
-					<span class="font-weight-light pos-navbar-title-light">{{ __("POS") }}</span
-					><span class="pos-navbar-title-bold">{{ __("Awesome") }}</span>
-				</template>
+			<template v-if="isMobile">
+				<span class="pos-navbar-title-compact" style="color: #e51401 !important;">{{ __("BZK") }}</span>
+			</template>
+			<template v-else>
+				<span class="font-weight-light pos-navbar-title-light" style="color: #e51401 !important;">{{ __("BZK") }}</span
+				><span class="pos-navbar-title-bold" style="color: #e51401 !important;">{{ __("POS") }}</span>
+			</template>
 			</v-toolbar-title>
 		</div>
 
@@ -313,6 +313,19 @@ export default {
 </script>
 
 <style scoped>
+/* Override text colors with red palette */
+:deep(.text-info) {
+	color: #e51401 !important;
+}
+
+:deep(.text-primary) {
+	color: #e51401 !important;
+}
+
+:deep(.pos-text-primary) {
+	color: #e51401 !important;
+}
+
 /* Enhanced Navbar Styling */
 .pos-navbar-enhanced {
 	background-image: linear-gradient(
@@ -516,8 +529,8 @@ export default {
 	align-items: center;
 	min-width: max-content;
 	flex-shrink: 0;
-	/* Use same blue as Menu button - matching gradient blue */
-	color: #1976d2 !important;
+	/* Red 700 - Main brand color */
+	color: #e51401 !important;
 }
 
 .pos-navbar-title:hover {
@@ -573,18 +586,26 @@ export default {
 	transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 	min-width: 40px;
 	min-height: 40px;
-	color: #1976d2 !important;
-	background: rgba(25, 118, 210, 0.08) !important;
-	border: 1px solid rgba(25, 118, 210, 0.12);
+	color: #e51401 !important;
+	background: rgba(229, 20, 1, 0.08) !important;
+	border: 1px solid rgba(229, 20, 1, 0.12);
 	backdrop-filter: blur(8px);
 }
 
+.nav-icon :deep(i) {
+	color: #e51401 !important;
+}
+
 .nav-icon:hover {
-	background: rgba(25, 118, 210, 0.12) !important;
-	color: #1565c0 !important;
-	border-color: rgba(25, 118, 210, 0.2);
+	background: rgba(229, 20, 1, 0.12) !important;
+	color: #af1305 !important;
+	border-color: rgba(229, 20, 1, 0.2);
 	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15);
+	box-shadow: 0 4px 12px rgba(229, 20, 1, 0.15);
+}
+
+.nav-icon:hover :deep(i) {
+	color: #af1305 !important;
 }
 
 .rtl-nav-icon {
@@ -636,9 +657,9 @@ export default {
 }
 
 .profile-chip {
-	color: #1976d2 !important;
-	border-color: rgba(25, 118, 210, 0.2) !important;
-	background: rgba(25, 118, 210, 0.06) !important;
+	color: #e51401 !important;
+	border-color: rgba(229, 20, 1, 0.2) !important;
+	background: rgba(229, 20, 1, 0.06) !important;
 	backdrop-filter: blur(8px);
 }
 
@@ -662,9 +683,9 @@ export default {
 
 .profile-chip:hover {
 	transform: translateY(-1px);
-	background: rgba(25, 118, 210, 0.1) !important;
-	border-color: rgba(25, 118, 210, 0.25) !important;
-	box-shadow: 0 4px 12px rgba(25, 118, 210, 0.12);
+	background: rgba(229, 20, 1, 0.1) !important;
+	border-color: rgba(229, 20, 1, 0.25) !important;
+	box-shadow: 0 4px 12px rgba(229, 20, 1, 0.12);
 }
 
 /* RTL Profile Chip Styling */

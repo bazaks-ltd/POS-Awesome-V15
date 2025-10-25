@@ -112,35 +112,35 @@
 							@click:clear="clearPaymentAmount(payment)"
 						></v-text-field>
 					</v-col>
-						<v-col cols="6" v-if="!is_mpesa_c2b_payment(payment)">
-							<v-btn block color="primary" theme="dark" @click="set_full_amount(payment.idx)">
-								{{ payment.mode_of_payment }}
-							</v-btn>
-						</v-col>
+					<v-col cols="6" v-if="!is_mpesa_c2b_payment(payment)">
+						<v-btn block theme="dark" @click="set_full_amount(payment.idx)" style="background-color: #e51401 !important;">
+							{{ payment.mode_of_payment }}
+						</v-btn>
+					</v-col>
 
-						<!-- M-Pesa Payment Button (if payment is M-Pesa) -->
-						<v-col cols="12" v-if="is_mpesa_c2b_payment(payment)" class="pl-3">
-							<v-btn block color="success" theme="dark" @click="mpesa_c2b_dialog(payment)">
-								{{ __("Get Payments") }} {{ payment.mode_of_payment }}
-							</v-btn>
-						</v-col>
+					<!-- M-Pesa Payment Button (if payment is M-Pesa) -->
+					<v-col cols="12" v-if="is_mpesa_c2b_payment(payment)" class="pl-3">
+						<v-btn block theme="dark" @click="mpesa_c2b_dialog(payment)" style="background-color: #ff3927 !important;">
+							{{ __("Get Payments") }} {{ payment.mode_of_payment }}
+						</v-btn>
+					</v-col>
 
-						<!-- Request Payment for Phone Type -->
-						<v-col
-							cols="3"
-							v-if="payment.type === 'Phone' && payment.amount > 0 && request_payment_field"
-							class="pl-1"
+					<!-- Request Payment for Phone Type -->
+					<v-col
+						cols="3"
+						v-if="payment.type === 'Phone' && payment.amount > 0 && request_payment_field"
+						class="pl-1"
+					>
+						<v-btn
+							block
+							theme="dark"
+							:disabled="payment.amount === 0"
+							@click="request_payment(payment)"
+							style="background-color: #ff3927 !important;"
 						>
-							<v-btn
-								block
-								color="success"
-								theme="dark"
-								:disabled="payment.amount === 0"
-								@click="request_payment(payment)"
-							>
-								{{ __("Request") }}
-							</v-btn>
-						</v-col>
+							{{ __("Request") }}
+						</v-btn>
+					</v-col>
 					</v-row>
 				</div>
 
@@ -643,13 +643,13 @@
 						ref="submitButton"
 						block
 						size="large"
-						color="primary"
 						theme="dark"
 						class="submit-btn"
 						@click="submit"
 						:loading="loading"
 						:disabled="loading || vaildatPayment"
 						:class="{ 'submit-highlight': highlightSubmit }"
+						style="background-color: #e51401 !important;"
 					>
 						{{ __("Submit") }}
 					</v-btn>
@@ -658,11 +658,11 @@
 					<v-btn
 						block
 						size="large"
-						color="success"
 						theme="dark"
 						@click="submit(undefined, false, true)"
 						:loading="loading"
 						:disabled="loading || vaildatPayment"
+						style="background-color: #ff3927 !important;"
 					>
 						{{ __("Submit & Print") }}
 					</v-btn>
@@ -672,9 +672,9 @@
 						block
 						class="mt-2 pa-1"
 						size="large"
-						color="error"
 						theme="dark"
 						@click="back_to_invoice"
+						style="background-color: #af1305 !important;"
 					>
 						{{ __("Cancel Payment") }}
 					</v-btn>

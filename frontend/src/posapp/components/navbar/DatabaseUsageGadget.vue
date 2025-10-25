@@ -3,13 +3,13 @@
 		<v-tooltip location="bottom">
 			<template #activator="{ props }">
 				<div v-bind="props" class="db-meter-container">
-					<v-icon size="22" color="info">mdi-database</v-icon>
+					<v-icon size="22" style="color: #e51401 !important;">mdi-database</v-icon>
 					<span class="db-current-size">{{ formattedDbSize }}</span>
 				</div>
 			</template>
 			<div class="db-tooltip-content p-3 min-w-[220px]">
 				<div class="db-tooltip-title flex items-center font-semibold text-[14px] mb-2">
-					<v-icon size="16" color="info" class="mr-1">mdi-database-settings</v-icon>
+					<v-icon size="16" style="color: #e51401 !important;" class="mr-1">mdi-database-settings</v-icon>
 					{{ __("Database Health") }}
 				</div>
 				<v-divider class="my-2" />
@@ -19,35 +19,35 @@
 					<div class="db-tooltip-section-title mb-1">{{ __("Database Info") }}</div>
 					<div class="db-tooltip-sparkline mb-2">
 						<svg :width="120" :height="32" class="db-sparkline">
-							<polyline
-								:points="sparklinePoints"
-								fill="none"
-								stroke="#1976d2"
-								stroke-width="2"
-							/>
+						<polyline
+							:points="sparklinePoints"
+							fill="none"
+							stroke="#e51401"
+							stroke-width="2"
+						/>
 						</svg>
 					</div>
 					<div class="db-tooltip-detail flex items-center mb-1">
-						<v-icon size="14" color="info" class="mr-1">mdi-database-settings</v-icon>
+						<v-icon size="14" style="color: #e51401 !important;" class="mr-1">mdi-database-settings</v-icon>
 						<b>{{ dbStats.db_engine }}</b>
 						<span class="ml-2">{{ dbStats.db_version }}</span>
 					</div>
 					<v-divider class="my-2" />
 					<div class="db-tooltip-section-title mb-1">{{ __("Usage Stats") }}</div>
 					<div class="db-tooltip-detail flex items-center mb-1">
-						<v-icon size="14" color="info" class="mr-1">mdi-database</v-icon>
+						<v-icon size="14" style="color: #e51401 !important;" class="mr-1">mdi-database</v-icon>
 						{{ __("Size:") }} <b>{{ formattedDbSize }}</b>
 						<span class="ml-2 flex items-center"
-							><v-icon size="14" color="info" class="mr-1">mdi-table</v-icon
+							><v-icon size="14" style="color: #e51401 !important;" class="mr-1">mdi-table</v-icon
 							>{{ __("Tables:") }} <b>{{ dbStats.db_table_count }}</b></span
 						>
 						<span class="ml-2 flex items-center"
-							><v-icon size="14" color="info" class="mr-1">mdi-format-list-numbered</v-icon
+							><v-icon size="14" style="color: #e51401 !important;" class="mr-1">mdi-format-list-numbered</v-icon
 							>{{ __("Rows:") }} <b>{{ dbStats.db_total_rows }}</b></span
 						>
 					</div>
 					<div class="db-tooltip-detail flex items-center mb-1">
-						<v-icon size="14" color="info" class="mr-1">mdi-connection</v-icon>
+						<v-icon size="14" style="color: #e51401 !important;" class="mr-1">mdi-connection</v-icon>
 						{{ __("Connections:") }} <b>{{ dbStats.db_connections }}</b>
 						<span class="ml-2 flex items-center"
 							><v-icon size="14" color="warning" class="mr-1">mdi-timer-sand</v-icon
@@ -57,7 +57,7 @@
 					<v-divider class="my-2" />
 					<div v-if="dbStats.db_top_tables && dbStats.db_top_tables.length">
 						<div class="db-tooltip-section-title mb-1 flex items-center">
-							<v-icon size="14" color="info" class="mr-1">mdi-database-outline</v-icon>
+							<v-icon size="14" style="color: #e51401 !important;" class="mr-1">mdi-database-outline</v-icon>
 							{{ __("Top Tables") }}
 						</div>
 						<ul class="db-top-tables ml-2">
@@ -66,7 +66,7 @@
 								:key="t.name"
 								class="flex items-center mb-1"
 							>
-								<v-icon size="12" color="info" class="mr-1">mdi-table</v-icon>
+								<v-icon size="12" style="color: #e51401 !important;" class="mr-1">mdi-table</v-icon>
 								<b>{{ t.name }}</b
 								>: {{ formatBytes(t.size) }}
 							</li>
@@ -79,7 +79,7 @@
 					{{ __("Tip: Monitor slow queries and table size for optimal performance.") }}
 				</div>
 				<div class="db-tooltip-explanation mt-2 flex items-center">
-					<v-icon size="14" color="info" class="mr-1">mdi-database</v-icon>
+					<v-icon size="14" style="color: #e51401 !important;" class="mr-1">mdi-database</v-icon>
 					{{ __("Database health affects overall system speed and reliability.") }}
 				</div>
 			</div>

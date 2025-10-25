@@ -21,7 +21,7 @@
 						:aria-label="cacheUsageLabel"
 						class="cache-meter"
 					>
-						<v-icon size="16" color="info">mdi-database-clock</v-icon>
+						<v-icon size="16" style="color: #e51401 !important;">mdi-database-clock</v-icon>
 					</v-progress-circular>
 				</div>
 			</template>

@@ -35,17 +35,17 @@
 					</v-col>
 					<!-- Invoice Type Selection (Only shown if sales orders are allowed) -->
 					<v-col v-if="pos_profile.posa_allow_sales_order" cols="3" class="pb-4">
-						<v-select
-							density="compact"
-							hide-details
-							variant="solo"
-							color="primary"
-							class="sleek-field pos-themed-input"
-							:items="invoiceTypes"
-							:label="frappe._('Type')"
-							v-model="invoiceType"
-							:disabled="invoiceType == 'Return'"
-						></v-select>
+					<v-select
+						density="compact"
+						hide-details
+						variant="solo"
+						class="sleek-field pos-themed-input"
+						:items="invoiceTypes"
+						:label="frappe._('Type')"
+						v-model="invoiceType"
+						:disabled="invoiceType == 'Return'"
+						style="--v-theme-primary: #e51401;"
+					></v-select>
 					</v-col>
 				</v-row>
 
@@ -120,28 +120,28 @@
 				<div class="items-table-wrapper">
 					<!-- Column selector button moved outside the table -->
 					<div class="column-selector-container">
-						<v-text-field
-							v-model="itemSearch"
-							density="compact"
-							variant="solo"
-							color="primary"
-							class="item-search-field pos-themed-input"
-							:label="__('Search items or barcode')"
-							prepend-inner-icon="mdi-magnify"
-							hide-details
-							clearable
-							autocomplete="off"
-						></v-text-field>
-						<v-btn
-							density="compact"
-							variant="text"
-							color="primary"
-							prepend-icon="mdi-cog-outline"
-							@click="toggleColumnSelection"
-							class="column-selector-btn"
-						>
-							{{ __("Columns") }}
-						</v-btn>
+					<v-text-field
+						v-model="itemSearch"
+						density="compact"
+						variant="solo"
+						class="item-search-field pos-themed-input"
+						:label="__('Search items or barcode')"
+						prepend-inner-icon="mdi-magnify"
+						hide-details
+						clearable
+						autocomplete="off"
+						style="--v-theme-primary: #e51401;"
+					></v-text-field>
+					<v-btn
+						density="compact"
+						variant="text"
+						prepend-icon="mdi-cog-outline"
+						@click="toggleColumnSelection"
+						class="column-selector-btn"
+						style="color: #e51401 !important;"
+					>
+						{{ __("Columns") }}
+					</v-btn>
 
 						<v-dialog v-model="show_column_selector" max-width="500px">
 							<v-card>
@@ -165,14 +165,14 @@
 										>
 											<v-switch
 												v-model="temp_selected_columns"
-												:label="column.title"
-												:value="column.key"
-												hide-details
-												density="compact"
-												color="primary"
-												class="column-switch mb-1"
-												:disabled="column.required"
-											></v-switch>
+											:label="column.title"
+											:value="column.key"
+											hide-details
+											density="compact"
+											class="column-switch mb-1"
+											:disabled="column.required"
+											style="--v-theme-primary: #e51401;"
+										></v-switch>
 										</v-col>
 									</v-row>
 									<div class="text-caption mt-2">
@@ -180,13 +180,13 @@
 									</div>
 								</v-card-text>
 								<v-card-actions class="pa-4 pt-0">
-									<v-btn color="error" variant="text" @click="cancelColumnSelection">{{
-										__("Cancel")
-									}}</v-btn>
-									<v-spacer></v-spacer>
-									<v-btn color="primary" variant="tonal" @click="updateSelectedColumns">{{
-										__("Apply")
-									}}</v-btn>
+								<v-btn color="error" variant="text" @click="cancelColumnSelection">{{
+									__("Cancel")
+								}}</v-btn>
+								<v-spacer></v-spacer>
+								<v-btn variant="tonal" @click="updateSelectedColumns" style="background-color: #e51401 !important; color: white !important;">{{
+									__("Apply")
+								}}</v-btn>
 								</v-card-actions>
 							</v-card>
 						</v-dialog>
@@ -1480,6 +1480,26 @@ export default {
 /* Card background adjustments */
 .cards {
 	background-color: var(--surface-secondary) !important;
+}
+
+/* Override Vuetify primary color classes with red palette */
+:deep(.bg-primary) {
+	background-color: #e51401 !important;
+}
+
+:deep(.text-primary) {
+	color: #e51401 !important;
+}
+
+:deep(.v-progress-linear__background.bg-primary),
+:deep(.v-progress-linear__buffer.bg-primary),
+:deep(.v-progress-linear__indeterminate .bg-primary),
+:deep(.v-progress-linear__determinate.bg-primary) {
+	background-color: #e51401 !important;
+}
+
+:deep(.v-field__loader .bg-primary) {
+	background-color: #e51401 !important;
 }
 
 /* Style for selected checkbox button */
