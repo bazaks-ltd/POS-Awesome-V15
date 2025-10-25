@@ -616,7 +616,8 @@ export default {
 				}
 
 				// These fields ensure proper return handling
-				invoice_doc.update_stock = 1;
+				// Set update_stock based on POS Profile setting for service sales
+				invoice_doc.update_stock = this.pos_profile.posa_allow_service_sales ? 0 : 1;
 				invoice_doc.pos_profile = this.pos_profile.name;
 				invoice_doc.company = this.company;
 

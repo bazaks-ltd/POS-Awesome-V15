@@ -691,7 +691,8 @@ export default {
 			if (this.invoice_doc.return_against) {
 				doc.return_against = this.invoice_doc.return_against;
 			}
-			doc.update_stock = 1;
+			// Set update_stock based on POS Profile setting for service sales
+			doc.update_stock = this.pos_profile.posa_allow_service_sales ? 0 : 1;
 
 			// Double-check all values are negative
 			if (doc.grand_total > 0) doc.grand_total = -Math.abs(doc.grand_total);
@@ -832,7 +833,8 @@ export default {
 			}
 		});
 		doc.items = newItems;
-		doc.update_stock = 1;
+		// Set update_stock based on POS Profile setting for service sales
+		doc.update_stock = this.pos_profile.posa_allow_service_sales ? 0 : 1;
 		doc.is_pos = 1;
 		doc.payments = this.get_payments();
 		return doc;
@@ -2015,17 +2017,17 @@ export default {
 						name: currentDoc.name || `New ${currentDoc.doctype} 1`,
 						company: this.pos_profile.company,
 						conversion_rate: 1,
-						currency: this.pos_profile.currency,
-						qty: item.qty,
-						price_list_rate: item.base_price_list_rate ?? item.price_list_rate ?? 0,
-						child_docname: `New ${currentDoc.doctype} Item 1`,
-						cost_center: this.pos_profile.cost_center,
-						pos_profile: this.pos_profile.name,
-						uom: item.uom,
-						tax_category: "",
-						transaction_type: "selling",
-						update_stock: this.pos_profile.update_stock,
-						price_list: this.get_price_list(),
+					currency: this.pos_profile.currency,
+					qty: item.qty,
+					price_list_rate: item.base_price_list_rate ?? item.price_list_rate ?? 0,
+					child_docname: `New ${currentDoc.doctype} Item 1`,
+					cost_center: this.pos_profile.cost_center,
+					pos_profile: this.pos_profile.name,
+					uom: item.uom,
+					tax_category: "",
+					transaction_type: "selling",
+					update_stock: this.pos_profile.posa_allow_service_sales ? 0 : this.pos_profile.update_stock,
+					price_list: this.get_price_list(),
 						has_batch_no: item.has_batch_no,
 						has_serial_no: item.has_serial_no,
 						serial_no: item.serial_no,
@@ -2527,7 +2529,8 @@ export default {
 
 	// Update quantity limits based on available stock (simplified - validation handled centrally)
         update_qty_limits(item) {
-                if (item && item.is_stock_item === 0) {
+                // When service sales mode is enabled, treat all items as service items (no stock limits)
+                if (this.pos_profile?.posa_allow_service_sales || (item && item.is_stock_item === 0)) {
                         item.max_qty = undefined;
                         item.disable_increment = false;
                         return;
@@ -2545,7 +2548,8 @@ export default {
 
         // Fetch available stock for an item and cache it
         async fetch_available_qty(item) {
-                if (!item || !item.item_code || !item.warehouse || item.is_stock_item === 0) return;
+                // Skip fetching stock when service sales mode is enabled or item is not a stock item
+                if (this.pos_profile?.posa_allow_service_sales || !item || !item.item_code || !item.warehouse || item.is_stock_item === 0) return;
 
 		const key = this._getStockCacheKey(item);
 		const cachedQty = this._getCachedStockQty(key);

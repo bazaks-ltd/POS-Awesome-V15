@@ -96,12 +96,12 @@
 					<v-col cols="6">
 						<v-btn
 							block
-							color="accent"
 							theme="dark"
 							prepend-icon="mdi-content-save"
 							@click="handleSaveAndClear"
 							class="summary-btn"
 							:loading="saveLoading"
+							style="background-color: #ff685a !important;"
 						>
 							{{ __("Save & Clear") }}
 						</v-btn>
@@ -109,12 +109,12 @@
 					<v-col cols="6">
 						<v-btn
 							block
-							color="warning"
 							theme="dark"
 							prepend-icon="mdi-file-document"
 							@click="handleLoadDrafts"
 							class="white-text-btn summary-btn"
 							:loading="loadDraftsLoading"
+							style="background-color: #fb1b07 !important;"
 						>
 							{{ __("Load Drafts") }}
 						</v-btn>
@@ -122,12 +122,12 @@
 					<v-col cols="6" v-if="pos_profile.custom_allow_select_sales_order == 1">
 						<v-btn
 							block
-							color="info"
 							theme="dark"
 							prepend-icon="mdi-book-search"
 							@click="handleSelectOrder"
 							class="summary-btn"
 							:loading="selectOrderLoading"
+							style="background-color: #ff3927 !important;"
 						>
 							{{ __("Select S.O") }}
 						</v-btn>
@@ -135,12 +135,12 @@
 					<v-col cols="6">
 						<v-btn
 							block
-							color="error"
 							theme="dark"
 							prepend-icon="mdi-close-circle"
 							@click="handleCancelSale"
 							class="summary-btn"
 							:loading="cancelLoading"
+							style="background-color: #e51401 !important;"
 						>
 							{{ __("Cancel Sale") }}
 						</v-btn>
@@ -148,12 +148,12 @@
 					<v-col cols="6" v-if="pos_profile.posa_allow_return == 1">
 						<v-btn
 							block
-							color="secondary"
 							theme="dark"
 							prepend-icon="mdi-backup-restore"
 							@click="handleOpenReturns"
 							class="summary-btn"
 							:loading="returnsLoading"
+							style="background-color: #af1305 !important;"
 						>
 							{{ __("Sales Return") }}
 						</v-btn>
@@ -161,12 +161,12 @@
 					<v-col cols="6" v-if="pos_profile.posa_allow_print_draft_invoices">
 						<v-btn
 							block
-							color="primary"
 							theme="dark"
 							prepend-icon="mdi-printer"
 							@click="handlePrintDraft"
 							class="summary-btn"
 							:loading="printLoading"
+							style="background-color: #ff3927 !important;"
 						>
 							{{ __("Print Draft") }}
 						</v-btn>
@@ -174,12 +174,12 @@
 					<v-col cols="6">
 						<v-btn
 							block
-							color="info"
 							theme="dark"
 							prepend-icon="mdi-tag"
 							@click="handleApplyOffers"
 							class="summary-btn"
 							:loading="applyOffersLoading"
+							style="background-color: #fb1b07 !important;"
 						>
 							{{ __("Apply Offers") }}
 						</v-btn>
@@ -187,13 +187,13 @@
 					<v-col cols="12">
 						<v-btn
 							block
-							color="success"
 							theme="dark"
 							size="large"
 							prepend-icon="mdi-credit-card"
 							@click="handleShowPayment"
 							class="summary-btn pay-btn"
 							:loading="paymentLoading"
+							style="background-color: #90170c !important;"
 						>
 							{{ __("PAY") }}
 						</v-btn>
@@ -374,6 +374,7 @@ export default {
 .summary-btn:hover {
 	transform: translateY(-1px);
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+	filter: brightness(1.1);
 }
 
 .summary-btn:active {
@@ -384,14 +385,15 @@ export default {
 .pay-btn {
 	font-weight: 600 !important;
 	font-size: 1.1rem !important;
-	background: linear-gradient(135deg, #4caf50, #45a049) !important;
-	box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3) !important;
+	background: linear-gradient(135deg, #90170c, #af1305) !important;
+	box-shadow: 0 4px 12px rgba(144, 23, 12, 0.3) !important;
 }
 
 .pay-btn:hover {
-	background: linear-gradient(135deg, #45a049, #3d8b40) !important;
-	box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4) !important;
+	background: linear-gradient(135deg, #af1305, #e51401) !important;
+	box-shadow: 0 6px 16px rgba(144, 23, 12, 0.4) !important;
 	transform: translateY(-2px);
+	filter: brightness(1) !important;
 }
 
 /* Enhanced field styling */

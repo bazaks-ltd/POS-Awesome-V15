@@ -85,31 +85,33 @@
 				<!-- Payment Inputs (All Payment Methods) -->
 				<div v-if="is_cashback && invoice_doc && Array.isArray(invoice_doc.payments)">
 					<v-row class="payments pa-1" v-for="payment in invoice_doc.payments" :key="payment.name">
-						<v-col cols="6" v-if="!is_mpesa_c2b_payment(payment)">
-							<v-text-field
-								density="compact"
-								variant="solo"
-								color="primary"
-								:label="frappe._(payment.mode_of_payment)"
-								class="sleek-field pos-themed-input"
-								hide-details
-								:model-value="formatCurrency(payment.amount)"
-								@change="setFormatedCurrency(payment, 'amount', null, false, $event)"
-								:rules="[
-									isNumber,
-									(v) =>
-										!payment.mode_of_payment.toLowerCase().includes('cash') ||
-										this.is_credit_sale ||
-										v >=
-											(this.invoice_doc.rounded_total ||
-												this.invoice_doc.grand_total) ||
-										'Cash payment cannot be less than invoice total when credit sale is off',
-								]"
-								:prefix="currencySymbol(invoice_doc.currency)"
-								@focus="set_rest_amount(payment.idx)"
-								:readonly="invoice_doc.is_return"
-							></v-text-field>
-						</v-col>
+					<v-col cols="6" v-if="!is_mpesa_c2b_payment(payment)">
+						<v-text-field
+							density="compact"
+							variant="solo"
+							color="primary"
+							:label="frappe._(payment.mode_of_payment)"
+							class="sleek-field pos-themed-input"
+							hide-details
+							:model-value="formatCurrency(payment.amount)"
+							@change="setFormatedCurrency(payment, 'amount', null, false, $event)"
+							:rules="[
+								isNumber,
+								(v) =>
+									!payment.mode_of_payment.toLowerCase().includes('cash') ||
+									this.is_credit_sale ||
+									v >=
+										(this.invoice_doc.rounded_total ||
+											this.invoice_doc.grand_total) ||
+									'Cash payment cannot be less than invoice total when credit sale is off',
+							]"
+							:prefix="currencySymbol(invoice_doc.currency)"
+							@focus="set_rest_amount(payment.idx)"
+							:readonly="invoice_doc.is_return"
+							clearable
+							@click:clear="clearPaymentAmount(payment)"
+						></v-text-field>
+					</v-col>
 						<v-col cols="6" v-if="!is_mpesa_c2b_payment(payment)">
 							<v-btn block color="primary" theme="dark" @click="set_full_amount(payment.idx)">
 								{{ payment.mode_of_payment }}
@@ -836,6 +838,10 @@ export default {
 			if (["Order", "Quotation"].includes(this.invoiceType)) {
 				return false;
 			}
+			// Don't block sales if service sales is enabled
+			if (this.pos_profile?.posa_allow_service_sales) {
+				return false;
+			}
 			const allowNegative = parseBooleanSetting(this.stock_settings?.allow_negative_stock);
 			return !allowNegative && Boolean(this.pos_profile?.posa_block_sale_beyond_available_qty);
 		},
@@ -1343,13 +1349,13 @@ export default {
 				frappe.utils.play_sound("error");
 				return;
 			}
-			// Validate stock availability before submitting
-			if (!isOffline()) {
+			// Validate stock availability before submitting (skip if service sales is enabled)
+			if (!isOffline() && !this.pos_profile?.posa_allow_service_sales) {
 				try {
 					const itemsToCheck = this.invoice_doc.items.filter((it) => !it.is_bundle);
 					const stockCheck = await frappe.call({
 						method: "posawesome.posawesome.api.invoices.validate_cart_items",
-						args: { items: JSON.stringify(itemsToCheck) },
+						args: { items: JSON.stringify(itemsToCheck), pos_profile: this.pos_profile?.name },
 					});
 					if (stockCheck.message && stockCheck.message.length) {
 						const msg = stockCheck.message
@@ -1595,6 +1601,14 @@ export default {
 					}
 				}
 			});
+		},
+		// Clear a specific payment amount
+		clearPaymentAmount(payment) {
+			payment.amount = 0;
+			if (payment.base_amount !== undefined) {
+				payment.base_amount = 0;
+			}
+			this.$forceUpdate();
 		},
 		// Clear all payment amounts
 		clear_all_amounts() {

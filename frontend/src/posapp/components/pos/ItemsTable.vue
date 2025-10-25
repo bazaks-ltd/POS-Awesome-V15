@@ -80,20 +80,22 @@
 					>
 						{{ formatFloat(item.qty, hide_qty_decimals ? 0 : undefined) }}
 					</div>
-					<v-btn
-						:disabled="
-							!!item.posa_is_replace ||
-							((!stock_settings.allow_negative_stock || blockSaleBeyondAvailableQty) &&
-								item.max_qty !== undefined &&
-								item.qty >= item.max_qty)
-						"
-						size="small"
-						variant="flat"
-						class="pos-table__qty-btn pos-table__qty-btn--plus plus-btn qty-control-btn"
-						@click.stop="addOne(item)"
-					>
-						<v-icon size="small">mdi-plus</v-icon>
-					</v-btn>
+			<v-btn
+				:disabled="
+					!!item.posa_is_replace ||
+					(!pos_profile?.posa_allow_service_sales &&
+						item.is_stock_item !== 0 &&
+						(!stock_settings.allow_negative_stock || blockSaleBeyondAvailableQty) &&
+						item.max_qty !== undefined &&
+						item.qty >= item.max_qty)
+				"
+				size="small"
+				variant="flat"
+				class="pos-table__qty-btn pos-table__qty-btn--plus plus-btn qty-control-btn"
+				@click.stop="addOne(item)"
+			>
+				<v-icon size="small">mdi-plus</v-icon>
+			</v-btn>
 				</div>
 			</template>
 
@@ -229,18 +231,18 @@
 											@change="handleQtyChange(item, $event)"
 											:rules="[isNumber]"
 											:disabled="!!item.posa_is_replace"
-											prepend-inner-icon="mdi-numeric"
-										></v-text-field>
-										<div v-if="item.max_qty !== undefined" class="text-caption mt-1">
-											{{
-												__("In stock: {0}", [
-													formatFloat(
-														item.max_qty,
-														hide_qty_decimals ? 0 : undefined,
-													),
-												])
-											}}
-										</div>
+									prepend-inner-icon="mdi-numeric"
+								></v-text-field>
+								<div v-if="item.max_qty !== undefined && !pos_profile?.posa_allow_service_sales" class="text-caption mt-1">
+									{{
+										__("In stock: {0}", [
+											formatFloat(
+												item.max_qty,
+												hide_qty_decimals ? 0 : undefined,
+											),
+										])
+									}}
+								</div>
 									</div>
 									<div class="form-field">
 										<v-select
@@ -397,12 +399,12 @@
 								</div>
 							</div>
 
-							<!-- Stock Information Section -->
-							<div class="form-section">
-								<div class="section-header">
-									<v-icon size="small" class="section-icon">mdi-warehouse</v-icon>
-									<span class="section-title">{{ __("Stock Information") }}</span>
-								</div>
+						<!-- Stock Information Section -->
+						<div class="form-section" v-if="!pos_profile?.posa_allow_service_sales">
+							<div class="section-header">
+								<v-icon size="small" class="section-icon">mdi-warehouse</v-icon>
+								<span class="section-title">{{ __("Stock Information") }}</span>
+							</div>
 								<div class="form-row">
 									<div class="form-field">
 										<v-text-field
@@ -485,10 +487,10 @@
 								</div>
 							</div>
 
-							<!-- Serial Number Section -->
-							<div class="form-section" v-if="item.has_serial_no || item.serial_no">
-								<div class="section-header">
-									<v-icon size="small" class="section-icon">mdi-barcode-scan</v-icon>
+						<!-- Serial Number Section -->
+						<div class="form-section" v-if="(item.has_serial_no || item.serial_no) && !pos_profile?.posa_allow_service_sales">
+							<div class="section-header">
+								<v-icon size="small" class="section-icon">mdi-barcode-scan</v-icon>
 									<span class="section-title">{{ __("Serial Numbers") }}</span>
 								</div>
 								<div class="form-row">
@@ -528,12 +530,12 @@
 								</div>
 							</div>
 
-							<!-- Batch Number Section -->
-							<div class="form-section" v-if="item.has_batch_no || item.batch_no">
-								<div class="section-header">
-									<v-icon size="small" class="section-icon"
-										>mdi-package-variant-closed</v-icon
-									>
+						<!-- Batch Number Section -->
+						<div class="form-section" v-if="(item.has_batch_no || item.batch_no) && !pos_profile?.posa_allow_service_sales">
+							<div class="section-header">
+								<v-icon size="small" class="section-icon"
+									>mdi-package-variant-closed</v-icon
+								>
 									<span class="section-title">{{ __("Batch Information") }}</span>
 								</div>
 								<div class="form-row">
@@ -760,6 +762,10 @@ export default {
 
 		blockSaleBeyondAvailableQty() {
 			if (["Order", "Quotation"].includes(this.invoiceType)) return false;
+			// Don't block sales if service sales is enabled
+			if (this.pos_profile?.posa_allow_service_sales) {
+				return false;
+			}
 			const allowNegative = parseBooleanSetting(this.stock_settings?.allow_negative_stock);
 			return !allowNegative && !!this.pos_profile?.posa_block_sale_beyond_available_qty;
 		},
@@ -1393,10 +1399,12 @@ export default {
 	padding: 0 !important;
 	width: 100% !important;
 	max-width: 100% !important;
-	overflow: hidden;
+	overflow: visible;
 	box-sizing: border-box;
 	/* Ensure it spans the full table width including expand column */
 	position: relative;
+	height: auto !important;
+	min-height: auto !important;
 }
 
 /* Main expanded content container */
@@ -2695,9 +2703,15 @@ body[dir="rtl"] .amount-value.right-aligned {
 }
 
 /* Ensure table rows have consistent spacing */
-.pos-table :deep(tbody tr:not([style*="height: 0"])) {
+.pos-table :deep(tbody tr:not([style*="height: 0"]):not(.v-data-table__expanded__content)) {
 	height: var(--cell-height, 60px);
 	min-height: var(--cell-height, 60px);
+}
+
+/* Ensure expanded rows have auto height to show full content */
+.pos-table :deep(tbody tr.v-data-table__expanded__content) {
+	height: auto !important;
+	min-height: auto !important;
 }
 
 /* Clean up any unwanted spacing from virtual scrolling */
@@ -2784,6 +2798,7 @@ body[dir="rtl"] .amount-value.right-aligned {
 /* Enhanced expanded row width utilization */
 .pos-table :deep(tr.v-data-table__expanded__content) {
 	width: 100% !important;
+	height: auto !important;
 }
 
 .pos-table :deep(tr.v-data-table__expanded__content td) {
@@ -2791,6 +2806,7 @@ body[dir="rtl"] .amount-value.right-aligned {
 	max-width: 100% !important;
 	padding: 0 !important;
 	margin: 0 !important;
+	height: auto !important;
 }
 
 /* Ensure expanded rows don't have unwanted borders */

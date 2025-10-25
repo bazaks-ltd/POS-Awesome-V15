@@ -429,18 +429,18 @@ class ItemDetailAggregator:
                 self.customer,
                 today=self.today,
                 ttl=self.cache_ttl,
-            )
+            ) or []
         # Stock, metadata, UOM and barcode data are reused both for batches and the
         # final merged item rows, so collect them up front.
-        stock_rows = get_bin_qty(self.warehouse, item_codes_tuple, ttl=self.cache_ttl)
-        meta_rows = get_item_meta(item_codes_tuple, ttl=self.cache_ttl)
-        uom_rows = get_uoms(item_codes_tuple, ttl=self.cache_ttl)
-        barcode_rows = get_barcodes(item_codes_tuple, ttl=self.cache_ttl)
+        stock_rows = get_bin_qty(self.warehouse, item_codes_tuple, ttl=self.cache_ttl) or []
+        meta_rows = get_item_meta(item_codes_tuple, ttl=self.cache_ttl) or []
+        uom_rows = get_uoms(item_codes_tuple, ttl=self.cache_ttl) or []
+        barcode_rows = get_barcodes(item_codes_tuple, ttl=self.cache_ttl) or []
 
         batch_items = [row.name for row in meta_rows if row.get("has_batch_no")]
         serial_items = [row.name for row in meta_rows if row.get("has_serial_no")]
-        batch_rows = get_batches(self.warehouse, _normalize_codes(batch_items), ttl=self.cache_ttl)
-        serial_rows = get_serials(self.warehouse, _normalize_codes(serial_items), ttl=self.cache_ttl)
+        batch_rows = get_batches(self.warehouse, _normalize_codes(batch_items), ttl=self.cache_ttl) or []
+        serial_rows = get_serials(self.warehouse, _normalize_codes(serial_items), ttl=self.cache_ttl) or []
 
         price_map: Dict[str, Dict[str, frappe._dict]] = {}
         for row in price_rows:

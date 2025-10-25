@@ -141,6 +141,10 @@ export default {
 		if (["Order", "Quotation"].includes(this.invoiceType)) {
 			return false;
 		}
+		// Don't block sales if service sales is enabled
+		if (this.pos_profile?.posa_allow_service_sales) {
+			return false;
+		}
 		const allowNegative = parseBooleanSetting(this.stock_settings?.allow_negative_stock);
 		return !allowNegative && Boolean(this.pos_profile?.posa_block_sale_beyond_available_qty);
 	},

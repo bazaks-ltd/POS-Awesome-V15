@@ -10,6 +10,23 @@ frappe.pages["posapp"].on_page_load = async function (wrapper) {
 
 	$("div.navbar-fixed-top").find(".container").css("padding", "0");
 
+	// Hide sidebar for POS page
+	$("head").append(`
+		<style>
+			.body-sidebar-container,
+			.body-sidebar-placeholder,
+			.body-sidebar {
+				display: none !important;
+			}
+			.layout-main {
+				margin-left: 0 !important;
+			}
+			.layout-main-section-wrapper {
+				margin-left: 0 !important;
+			}
+		</style>
+	`);
+
 	$("head").append(
 		"<link href='/assets/posawesome/node_modules/vuetify/dist/vuetify.min.css' rel='stylesheet'>",
 	);

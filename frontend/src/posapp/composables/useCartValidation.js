@@ -53,6 +53,13 @@ export function useCartValidation() {
 				return false;
 			}
 
+			const isStockItem = parseBooleanSetting(item?.is_stock_item);
+			
+			// Skip stock validation if service sales is enabled or item is not a stock item
+			if (posProfile?.posa_allow_service_sales || !isStockItem) {
+				return true;
+			}
+
 			// Step 3: Zero stock validation (if enabled)
 			if (item.actual_qty === 0 && posProfile?.posa_display_items_in_stock) {
 				if (eventBus) {
@@ -63,8 +70,6 @@ export function useCartValidation() {
 				}
 				return false;
 			}
-
-                        const isStockItem = parseBooleanSetting(item?.is_stock_item);
 
                         if (isStockItem) {
                                 // Step 4: Client-side quantity validation (before server call)

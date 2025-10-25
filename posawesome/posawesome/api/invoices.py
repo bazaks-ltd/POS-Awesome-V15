@@ -132,6 +132,10 @@ def _should_block(pos_profile):
     if allow_negative:
         return False
 
+    # Don't block sales if service sales is enabled
+    if pos_profile and frappe.db.get_value("POS Profile", pos_profile, "posa_allow_service_sales"):
+        return False
+
     block_sale = 1
     if pos_profile:
         block_sale = cint(
@@ -348,6 +352,10 @@ def update_invoice(data):
     # Reapply any custom item names after defaults are set
     _apply_item_name_overrides(invoice_doc, overrides)
 
+    # Set allow_zero_valuation_rate for all items (prevents zero valuation errors)
+    for item in invoice_doc.items:
+        item.allow_zero_valuation_rate = 1
+
     # Remove duplicate taxes from item and profile templates
     _merge_duplicate_taxes(invoice_doc)
 
@@ -449,6 +457,10 @@ def update_invoice(data):
         invoice_doc.paid_amount = flt(sum(p.amount for p in invoice_doc.payments))
         invoice_doc.base_paid_amount = flt(sum(p.base_amount for p in invoice_doc.payments))
 
+    # Check if service sales (no stock update) is enabled in POS Profile
+    if pos_profile and frappe.db.get_value("POS Profile", pos_profile, "posa_allow_service_sales"):
+        invoice_doc.update_stock = 0
+
     invoice_doc.flags.ignore_permissions = True
     frappe.flags.ignore_account_permission = True
     invoice_doc.docstatus = 0
@@ -486,6 +498,11 @@ def submit_invoice(invoice, data):
     _apply_item_name_overrides(invoice_doc)
     if invoice.get("posa_delivery_date"):
         invoice_doc.update_stock = 0
+    
+    # Check if service sales (no stock update) is enabled in POS Profile
+    if pos_profile and frappe.db.get_value("POS Profile", pos_profile, "posa_allow_service_sales"):
+        invoice_doc.update_stock = 0
+    
     mop_cash_list = [
         i.mode_of_payment
         for i in invoice_doc.payments
@@ -587,6 +604,14 @@ def submit_invoice(invoice, data):
 
     _validate_stock_on_invoice(invoice_doc)
 
+    # Set allow_zero_valuation_rate for all items (prevents zero valuation errors)
+    for item in invoice_doc.items:
+        item.allow_zero_valuation_rate = 1
+
+    # Final check: Ensure update_stock is 0 if service sales is enabled
+    if pos_profile and frappe.db.get_value("POS Profile", pos_profile, "posa_allow_service_sales"):
+        invoice_doc.update_stock = 0
+
     invoice_doc.flags.ignore_permissions = True
     frappe.flags.ignore_account_permission = True
     invoice_doc.posa_is_printed = 1
@@ -661,6 +686,16 @@ def submit_in_background_job(kwargs):
     items.append(grand_total)
 
     invoice_doc.remarks = "\n".join(items)
+    
+    # Set allow_zero_valuation_rate for all items (prevents zero valuation errors)
+    for item in invoice_doc.items:
+        item.allow_zero_valuation_rate = 1
+    
+    # Final check: Ensure update_stock is 0 if service sales is enabled
+    pos_profile = invoice_doc.get("pos_profile")
+    if pos_profile and frappe.db.get_value("POS Profile", pos_profile, "posa_allow_service_sales"):
+        invoice_doc.update_stock = 0
+    
     invoice_doc.save()
 
     invoice_doc.submit()

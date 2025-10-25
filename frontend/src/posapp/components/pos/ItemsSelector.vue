@@ -3329,6 +3329,10 @@ export default {
 			return 500;
 		},
 		blockSaleBeyondAvailableQty() {
+			// Don't block sales if service sales is enabled
+			if (this.pos_profile?.posa_allow_service_sales) {
+				return false;
+			}
 			return (
 				Boolean(this.pos_profile?.posa_block_sale_beyond_available_qty) &&
 				!this.isNegativeStockEnabled()
@@ -3338,53 +3342,82 @@ export default {
 			return this.getItemsHeaders();
 		},
 		cardColumns() {
-			if (this.windowWidth <= 768) {
-				return 1;
-			}
-			if (this.windowWidth <= 1200) {
+			// Auto-fill grid will handle columns, but keep for virtual scroller
+			if (this.windowWidth <= 600) {
 				return 2;
+			}
+			if (this.windowWidth <= 768) {
+				return 2;
+			}
+			if (this.windowWidth <= 1024) {
+				return 3;
+			}
+			if (this.windowWidth <= 1400) {
+				return 3;
 			}
 			return 3;
 		},
 		cardGap() {
+			// Increased gaps for more spacious layout
+			if (this.windowWidth <= 600) {
+				return 14;
+			}
 			if (this.windowWidth <= 768) {
-				return 10;
+				return 16;
 			}
-			if (this.windowWidth <= 1200) {
-				return 12;
+			if (this.windowWidth <= 1024) {
+				return 18;
 			}
-			return 16;
+			if (this.windowWidth <= 1400) {
+				return 20;
+			}
+			return 24;
 		},
 		cardPadding() {
+			// Increased padding for more spacious layout
+			if (this.windowWidth <= 600) {
+				return 14;
+			}
 			if (this.windowWidth <= 768) {
-				return 10;
+				return 16;
 			}
-			if (this.windowWidth <= 1200) {
-				return 12;
+			if (this.windowWidth <= 1024) {
+				return 18;
 			}
-			return 16;
+			if (this.windowWidth <= 1400) {
+				return 20;
+			}
+			return 24;
 		},
 		cardRowHeight() {
-			if (this.windowWidth <= 768) {
-				return 220;
-			}
-			if (this.windowWidth <= 1200) {
+			// Increased card heights for less density and better image display
+			if (this.windowWidth <= 600) {
 				return 240;
 			}
-			return 260;
+			if (this.windowWidth <= 768) {
+				return 260;
+			}
+			if (this.windowWidth <= 1024) {
+				return 280;
+			}
+			if (this.windowWidth <= 1400) {
+				return 300;
+			}
+			return 320;
 		},
 		cardColumnWidth() {
 			const columns = Math.max(1, this.cardColumns);
 			const containerWidth = this.cardContainerWidth || 0;
 			if (!containerWidth) {
-				return 240;
+				return 220;
 			}
 
 			const gapTotal = this.cardGap * (columns - 1);
 			const paddingTotal = this.cardPadding * 2;
 			const available = Math.max(0, containerWidth - gapTotal - paddingTotal);
 			const width = Math.floor(available / columns);
-			return Math.max(180, width);
+			// Minimum width reduced to 140 for better mobile support
+			return Math.max(140, width);
 		},
 		displayedItems() {
 			const baseItems = Array.isArray(this.filteredItems) ? [...this.filteredItems] : [];
@@ -3990,12 +4023,12 @@ export default {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-/* Enhanced Card View Grid Layout - 3 items per row */
+/* Enhanced Card View Grid Layout - Responsive and spacious */
 .items-card-grid {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 16px;
-	padding: 16px;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 24px;
+	padding: 24px;
 	height: calc(100% - 80px);
 	overflow-y: auto;
 	scrollbar-width: thin;
@@ -4004,6 +4037,39 @@ export default {
 	contain: layout style;
 	will-change: scroll-position;
 	transform: translate3d(0, 0, 0);
+}
+
+/* Responsive adjustments for different screen sizes */
+@media screen and (max-width: 1400px) {
+	.items-card-grid {
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 20px;
+		padding: 20px;
+	}
+}
+
+@media screen and (max-width: 1024px) {
+	.items-card-grid {
+		grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+		gap: 18px;
+		padding: 18px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.items-card-grid {
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+		gap: 16px;
+		padding: 16px;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.items-card-grid {
+		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+		gap: 14px;
+		padding: 14px;
+	}
 }
 
 .virtual-scroller {
@@ -4036,34 +4102,53 @@ export default {
 
 .card-item-card {
 	background-color: var(--surface-secondary, #ffffff);
-	border-radius: 12px;
-	border: 1px solid rgba(0, 0, 0, 0.08);
+	border-radius: 16px;
+	border: 1px solid rgba(0, 0, 0, 0.06);
 	overflow: hidden;
 	transition:
-		transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-		box-shadow 0.2s ease,
-		border-color 0.2s ease;
+		transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+		box-shadow 0.3s ease,
+		border-color 0.3s ease;
 	cursor: pointer;
 	display: flex;
 	flex-direction: column;
 	height: auto;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 	will-change: transform;
 	backface-visibility: hidden;
 	transform: translate3d(0, 0, 0);
 }
 
 .card-item-card:hover {
-	transform: translate3d(0, -2px, 0);
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	transform: translate3d(0, -4px, 0);
+	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
 	border-color: var(--primary-color, #1976d2);
 }
 
 .card-item-image-container {
 	position: relative;
-	height: 120px;
+	height: 160px;
 	overflow: hidden;
 	background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* Responsive image height */
+@media screen and (max-width: 1024px) {
+	.card-item-image-container {
+		height: 140px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.card-item-image-container {
+		height: 120px;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.card-item-image-container {
+		height: 100px;
+	}
 }
 
 .card-item-image {
@@ -4088,25 +4173,40 @@ export default {
 }
 
 .card-item-content {
-	padding: 12px 16px 16px;
+	padding: 16px 18px 18px;
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: 12px;
+}
+
+/* Responsive card content padding */
+@media screen and (max-width: 768px) {
+	.card-item-content {
+		padding: 14px 16px 16px;
+		gap: 10px;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.card-item-content {
+		padding: 12px 14px 14px;
+		gap: 8px;
+	}
 }
 
 .card-item-header {
 	border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-	padding-bottom: 8px;
+	padding-bottom: 10px;
 	margin-bottom: 4px;
 }
 
 .card-item-name {
-	font-size: 0.9rem;
+	font-size: 0.95rem;
 	font-weight: 600;
 	color: var(--text-primary, #2c3e50);
-	margin: 0 0 4px 0;
-	line-height: 1.3;
+	margin: 0 0 6px 0;
+	line-height: 1.4;
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	line-clamp: 2;
@@ -4119,47 +4219,96 @@ export default {
 		sans-serif;
 }
 
+/* Responsive font sizes */
+@media screen and (max-width: 768px) {
+	.card-item-name {
+		font-size: 0.9rem;
+		margin: 0 0 5px 0;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.card-item-name {
+		font-size: 0.85rem;
+		margin: 0 0 4px 0;
+	}
+}
+
 .card-item-code {
-	font-size: 0.75rem;
+	font-size: 0.78rem;
 	color: var(--pos-text-secondary, #6c757d);
 	font-weight: 500;
 	background: rgba(0, 0, 0, 0.04);
-	padding: 2px 6px;
-	border-radius: 4px;
+	padding: 3px 8px;
+	border-radius: 6px;
+	display: inline-block;
+	width: fit-content;
 	/* Enhanced Arabic font support */
 	font-family:
 		"SF Pro Display", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans Arabic", "Tahoma",
 		sans-serif;
 }
 
+@media screen and (max-width: 600px) {
+	.card-item-code {
+		font-size: 0.72rem;
+		padding: 2px 6px;
+	}
+}
+
 .card-item-details {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: 10px;
 	flex: 1;
+}
+
+@media screen and (max-width: 600px) {
+	.card-item-details {
+		gap: 8px;
+	}
 }
 
 .card-item-price {
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+	gap: 6px;
 }
 
 .primary-price {
 	display: flex;
-	align-items: center;
-	gap: 2px;
-	font-weight: 600;
+	align-items: baseline;
+	gap: 4px;
+	font-weight: 700;
+	font-size: 1.05rem;
 	color: var(--primary-color, #1976d2);
+}
+
+@media screen and (max-width: 768px) {
+	.primary-price {
+		font-size: 1rem;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.primary-price {
+		font-size: 0.95rem;
+	}
 }
 
 .secondary-price {
 	display: flex;
-	align-items: center;
-	gap: 2px;
+	align-items: baseline;
+	gap: 4px;
 	font-weight: 500;
 	color: #4caf50;
-	font-size: 0.875rem;
+	font-size: 0.9rem;
+}
+
+@media screen and (max-width: 600px) {
+	.secondary-price {
+		font-size: 0.85rem;
+	}
 }
 
 .currency-symbol {
@@ -4186,19 +4335,28 @@ export default {
 .card-item-stock {
 	display: flex;
 	align-items: center;
-	gap: 6px;
-	padding: 6px 8px;
-	background: rgba(0, 0, 0, 0.02);
-	border-radius: 6px;
+	gap: 8px;
+	padding: 8px 12px;
+	background: rgba(0, 0, 0, 0.03);
+	border-radius: 8px;
 	margin-top: auto;
+}
+
+@media screen and (max-width: 600px) {
+	.card-item-stock {
+		padding: 6px 10px;
+		gap: 6px;
+	}
 }
 
 .stock-icon {
 	color: var(--pos-text-secondary, #6c757d);
+	opacity: 0.8;
 }
 
 .stock-amount {
 	font-weight: 600;
+	font-size: 0.9rem;
 	font-family:
 		"SF Pro Display", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans Arabic", "Tahoma",
 		sans-serif;
@@ -4211,10 +4369,22 @@ export default {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+@media screen and (max-width: 600px) {
+	.stock-amount {
+		font-size: 0.85rem;
+	}
+}
+
 .stock-uom {
-	font-size: 0.75rem;
+	font-size: 0.78rem;
 	color: var(--pos-text-secondary, #6c757d);
 	font-weight: 500;
+}
+
+@media screen and (max-width: 600px) {
+	.stock-uom {
+		font-size: 0.72rem;
+	}
 }
 
 /* Dark theme support for card view */
