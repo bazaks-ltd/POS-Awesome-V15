@@ -20,6 +20,10 @@
 				:loading-progress="loadingProgress"
 				:loading-active="loadingActive"
 				:loading-message="loadingMessage"
+				:offers-count="offersCount"
+				:coupons-count="couponsCount"
+				:items-view="itemsView"
+				:item-group-mode="itemGroupMode"
 				@change-page="setPage($event)"
 				@nav-click="handleNavClick"
 				@close-shift="handleCloseShift"
@@ -30,9 +34,15 @@
 				@logout="handleLogout"
 				@refresh-cache-usage="handleRefreshCacheUsage"
 				@update-after-delete="handleUpdateAfterDelete"
+				@show-offers="handleShowOffers"
+				@show-coupons="handleShowCoupons"
+				@show-item-settings="handleShowItemSettings"
+				@reload-items="handleReloadItems"
+				@change-view="handleChangeView"
+				@change-group-mode="handleChangeGroupMode"
 			/>
 			<div class="page-content">
-				<component v-bind:is="page" class="mx-4 md-4"></component>
+				<component v-bind:is="page"></component>
 			</div>
 		</v-main>
 	</v-app>
@@ -113,6 +123,16 @@ export default {
 			cacheUsageLoading: false,
 			cacheUsageDetails: { total: 0, indexedDB: 0, localStorage: 0 },
 			cacheReady: false,
+
+			// Offers and Coupons counts
+			offersCount: 0,
+			couponsCount: 0,
+
+			// Items view mode
+			itemsView: "card",
+
+			// Item group display mode
+			itemGroupMode: "tabs",
 
 			// Loading progress handled via utility
 		};
@@ -444,6 +464,38 @@ export default {
 				});
 		},
 
+		handleShowOffers() {
+			// Emit to POS component to show offers dialog
+			this.eventBus.emit("show_offers", "true");
+		},
+
+		handleShowCoupons() {
+			// Emit to POS component to show coupons dialog
+			this.eventBus.emit("show_coupons", "true");
+		},
+
+		handleShowItemSettings() {
+			// Emit to ItemsSelector to show settings dialog
+			this.eventBus.emit("show_item_settings", "true");
+		},
+
+		handleReloadItems() {
+			// Emit to ItemsSelector to reload items
+			this.eventBus.emit("reload_items", "true");
+		},
+
+		handleChangeView(view) {
+			// Update local state and emit to ItemsSelector
+			this.itemsView = view;
+			this.eventBus.emit("change_items_view", view);
+		},
+
+		handleChangeGroupMode(mode) {
+			// Update local state and emit to ItemsSelector
+			this.itemGroupMode = mode;
+			this.eventBus.emit("change_item_group_mode", mode);
+		},
+
 		async refreshTaxInclusiveSetting() {
 			if (!this.posProfile || !this.posProfile.name || !navigator.onLine) {
 				return;
@@ -490,12 +542,32 @@ export default {
 		if (this.eventBus) {
 			this.eventBus.off("pending_invoices_changed");
 			this.eventBus.off("data-loaded");
+			this.eventBus.off("update_offers_count");
+			this.eventBus.off("update_coupons_count");
 		}
 	},
 	created: function () {
 		setTimeout(() => {
 			this.remove_frappe_nav();
 		}, 1000);
+
+		// Listen for offers and coupons count updates
+		if (this.eventBus) {
+			this.eventBus.on("update_offers_count", (count) => {
+				this.offersCount = count || 0;
+			});
+			this.eventBus.on("update_coupons_count", (count) => {
+				this.couponsCount = count || 0;
+			});
+			// Listen for view mode updates from ItemsSelector
+			this.eventBus.on("update_items_view", (view) => {
+				this.itemsView = view || "card";
+			});
+			// Listen for item group mode updates from ItemsSelector
+			this.eventBus.on("update_item_group_mode", (mode) => {
+				this.itemGroupMode = mode || "tabs";
+			});
+		}
 	},
 };
 </script>
@@ -518,7 +590,9 @@ export default {
 .page-content {
 	flex: 1;
 	overflow-y: auto;
-	padding-top: 8px;
+	padding: 8px 16px 16px 16px;
+	width: 100%;
+	max-width: 100%;
 }
 
 /* Ensure proper spacing and prevent layout shifts */

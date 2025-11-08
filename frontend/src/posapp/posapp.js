@@ -14,6 +14,8 @@ import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import Home from "./Home.vue";
 import { attachProfilerHelpers, initLongTaskObserver, isPerfEnabled } from "./utils/perf.js";
+// Import feature flags to expose to window
+import "./utils/featureFlags.js";
 
 attachProfilerHelpers();
 

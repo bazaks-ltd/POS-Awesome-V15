@@ -7,9 +7,19 @@
 			:loading-progress="loadingProgress"
 			:loading-active="loadingActive"
 			:loading-message="loadingMessage"
+			:offers-count="offersCount"
+			:coupons-count="couponsCount"
+			:items-view="itemsView"
+			:item-group-mode="itemGroupMode"
 			@nav-click="handleNavClick"
 			@go-desk="goDesk"
 			@show-offline-invoices="showOfflineInvoices = true"
+			@show-offers="$emit('show-offers')"
+			@show-coupons="$emit('show-coupons')"
+			@show-item-settings="$emit('show-item-settings')"
+			@reload-items="$emit('reload-items')"
+			@change-view="$emit('change-view', $event)"
+			@change-group-mode="$emit('change-group-mode', $event)"
 		>
 			<!-- Slot for status indicator -->
 			<template #status-indicator>
@@ -192,6 +202,22 @@ export default {
 		loadingMessage: {
 			type: String,
 			default: "Loading app data...",
+		},
+		offersCount: {
+			type: Number,
+			default: 0,
+		},
+		couponsCount: {
+			type: Number,
+			default: 0,
+		},
+		itemsView: {
+			type: String,
+			default: "card",
+		},
+		itemGroupMode: {
+			type: String,
+			default: "tabs",
 		},
 	},
 	data() {
@@ -618,6 +644,12 @@ export default {
 		"refresh-cache-usage",
 		"update-after-delete",
 		"navbar-updated",
+		"show-offers",
+		"show-coupons",
+		"show-item-settings",
+		"reload-items",
+		"change-view",
+		"change-group-mode",
 	],
 };
 </script>

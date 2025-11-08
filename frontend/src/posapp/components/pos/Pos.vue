@@ -63,7 +63,7 @@ import {
 	checkDbHealth,
 	setTaxTemplate,
 } from "../../../offline/index.js";
-import { getCurrentInstance } from "vue";
+import { getCurrentInstance, onMounted } from "vue";
 import { usePosShift } from "../../composables/usePosShift.js";
 import { useOffers } from "../../composables/useOffers.js";
 // Import the cache cleanup function
@@ -72,6 +72,9 @@ import { useResponsive } from "../../composables/useResponsive.js";
 import { useRtl } from "../../composables/useRtl.js";
 import { useCustomersStore } from "../../stores/customersStore.js";
 import { storeToRefs } from "pinia";
+// Import POS Type system
+import { usePosType } from "../../composables/types/usePosType.js";
+import { useDeviceDetection } from "../../composables/types/useDeviceDetection.js";
 
 export default {
 	setup() {
@@ -84,7 +87,41 @@ export default {
 			}
 		});
 		const offers = useOffers();
-		return { ...responsive, ...rtl, ...shift, ...offers };
+		
+		// Initialize POS Type system
+		const posType = usePosType();
+		const device = useDeviceDetection();
+		
+		// Load POS Type configuration on mount
+		onMounted(async () => {
+			try {
+				await posType.loadPosTypeConfig();
+				console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+				console.log('✅ POS Type loaded:', posType.posTypeName.value);
+				console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+				console.log('📱 Device:', device.deviceType.value);
+				console.log('📏 Screen:', device.screenWidth.value, 'x', device.screenHeight.value);
+				console.log('👆 Touch:', device.touchCapable.value);
+				console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+				console.log('🎨 Features:', posType.enabledFeatures.value);
+				console.log('🔧 Scale:', posType.scaleEnabled.value ? 'Enabled' : 'Disabled');
+				console.log('💳 Split Payment:', posType.splitPaymentEnabled.value ? 'Enabled' : 'Disabled');
+				console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+			} catch (error) {
+				console.error('⚠️  POS Type load failed:', error.message);
+				console.log('Using default configuration');
+			}
+		});
+		
+		return { 
+			...responsive, 
+			...rtl, 
+			...shift, 
+			...offers,
+			// Expose POS Type info
+			posType,
+			device
+		};
 	},
 	data: function () {
 		return {
@@ -217,11 +254,20 @@ export default {
 	/*padding-top: calc(25px + var(--dynamic-lg));*/
 	/* Navbar height (25px) + larger spacing */
 	transition: all 0.3s ease;
+	width: 100%;
+	max-width: 100%;
+}
+
+.pos-main-container {
+	width: 100%;
+	max-width: 100%;
 }
 
 .dynamic-main-row {
 	padding: 0;
 	margin: 0;
+	width: 100%;
+	max-width: 100%;
 }
 
 .dynamic-col {

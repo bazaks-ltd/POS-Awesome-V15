@@ -1,0 +1,123 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:pos_type_name",
+ "creation": "2025-01-30 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "pos_type_name",
+  "description",
+  "icon",
+  "column_break_4",
+  "enabled",
+  "is_default",
+  "section_break_features",
+  "ui_configuration",
+  "section_break_hardware",
+  "hardware_configuration",
+  "section_break_workflow",
+  "workflow_configuration"
+ ],
+ "fields": [
+  {
+   "fieldname": "pos_type_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "POS Type Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "icon",
+   "fieldtype": "Data",
+   "label": "Icon",
+   "description": "Material Design Icon name (e.g., mdi-cart, mdi-medical-bag)"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_default",
+   "fieldtype": "Check",
+   "label": "Is Default"
+  },
+  {
+   "fieldname": "section_break_features",
+   "fieldtype": "Section Break",
+   "label": "UI Configuration"
+  },
+  {
+   "fieldname": "ui_configuration",
+   "fieldtype": "JSON",
+   "label": "UI Configuration",
+   "description": "JSON configuration for UI features and layout"
+  },
+  {
+   "fieldname": "section_break_hardware",
+   "fieldtype": "Section Break",
+   "label": "Hardware Configuration"
+  },
+  {
+   "fieldname": "hardware_configuration",
+   "fieldtype": "JSON",
+   "label": "Hardware Configuration",
+   "description": "JSON configuration for hardware integrations"
+  },
+  {
+   "fieldname": "section_break_workflow",
+   "fieldtype": "Section Break",
+   "label": "Workflow Configuration"
+  },
+  {
+   "fieldname": "workflow_configuration",
+   "fieldtype": "JSON",
+   "label": "Workflow Configuration",
+   "description": "JSON configuration for workflow and business rules"
+  }
+ ],
+ "links": [],
+ "modified": "2025-01-30 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "posawesome",
+ "name": "POS Type",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Sales User"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
+

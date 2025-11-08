@@ -51,6 +51,109 @@
 			</v-toolbar-title>
 		</div>
 
+		<!-- Quick Actions (Offers, Coupons, Settings) -->
+		<div :class="['pos-navbar-quick-actions', isRtl ? 'rtl-quick-actions' : 'ltr-quick-actions']">
+			<!-- Offers Button -->
+			<v-btn
+				density="compact"
+				variant="outlined"
+				prepend-icon="mdi-tag-multiple"
+				@click="$emit('show-offers')"
+				color="error"
+				:class="['quick-action-btn', isRtl ? 'rtl-action-btn' : 'ltr-action-btn']"
+			>
+				<template v-if="!isMobile">
+					{{ offersCount }} {{ __("Offers") }}
+				</template>
+				<v-badge v-if="offersCount > 0 && isMobile" :content="offersCount" color="error" inline>
+				</v-badge>
+			</v-btn>
+
+			<!-- Coupons Button -->
+			<v-btn
+				density="compact"
+				variant="outlined"
+				prepend-icon="mdi-ticket-percent"
+				@click="$emit('show-coupons')"
+				color="error"
+				:class="['quick-action-btn', isRtl ? 'rtl-action-btn' : 'ltr-action-btn']"
+			>
+				<template v-if="!isMobile">
+					{{ couponsCount }} {{ __("Coupons") }}
+				</template>
+				<v-badge v-if="couponsCount > 0 && isMobile" :content="couponsCount" color="error" inline>
+				</v-badge>
+			</v-btn>
+
+			<!-- View Mode Toggle (List/Card) - Red Theme -->
+			<v-btn-toggle
+				:model-value="itemsView"
+				@update:model-value="$emit('change-view', $event)"
+				mandatory
+				density="compact"
+				rounded
+				color="error"
+				:class="['view-toggle', isRtl ? 'rtl-action-btn' : 'ltr-action-btn']"
+			>
+				<v-btn value="list" size="small" :title="__('List View')">
+					<v-icon>mdi-view-list</v-icon>
+				</v-btn>
+				<v-btn value="card" size="small" :title="__('Card View')">
+					<v-icon>mdi-view-grid</v-icon>
+				</v-btn>
+			</v-btn-toggle>
+
+			<!-- Item Group Mode Switcher - Red Theme -->
+			<v-btn-toggle
+				:model-value="itemGroupMode"
+				@update:model-value="$emit('change-group-mode', $event)"
+				mandatory
+				density="compact"
+				rounded
+				color="error"
+				:class="['group-mode-toggle', isRtl ? 'rtl-action-btn' : 'ltr-action-btn']"
+			>
+				<v-btn value="tabs" size="small" :title="__('Tabs Mode')">
+					<v-icon>mdi-tab</v-icon>
+				</v-btn>
+				<v-btn value="tree" size="small" :title="__('Tree Mode')">
+					<v-icon>mdi-file-tree</v-icon>
+				</v-btn>
+				<v-btn value="filters" size="small" :title="__('Filters Mode')">
+					<v-icon>mdi-filter-variant</v-icon>
+				</v-btn>
+			</v-btn-toggle>
+
+			<!-- Settings Menu -->
+			<v-menu offset-y>
+				<template v-slot:activator="{ props }">
+					<v-btn
+						density="compact"
+						variant="tonal"
+						icon="mdi-dots-vertical"
+						v-bind="props"
+						color="primary"
+						:class="['quick-action-btn', isRtl ? 'rtl-action-btn' : 'ltr-action-btn']"
+					>
+					</v-btn>
+				</template>
+				<v-list>
+					<v-list-item @click="$emit('show-item-settings')">
+						<template v-slot:prepend>
+							<v-icon>mdi-cog-outline</v-icon>
+						</template>
+						<v-list-item-title>{{ __("Item Settings") }}</v-list-item-title>
+					</v-list-item>
+					<v-list-item @click="$emit('reload-items')">
+						<template v-slot:prepend>
+							<v-icon>mdi-refresh</v-icon>
+						</template>
+						<v-list-item-title>{{ __("Reload Items") }}</v-list-item-title>
+					</v-list-item>
+				</v-list>
+			</v-menu>
+		</div>
+
 		<v-spacer />
 
 		<!-- Actions Section (right in LTR, left in RTL) -->
@@ -238,6 +341,22 @@ export default {
 			type: String,
 			default: "Loading app data...",
 		},
+		offersCount: {
+			type: Number,
+			default: 0,
+		},
+		couponsCount: {
+			type: Number,
+			default: 0,
+		},
+		itemsView: {
+			type: String,
+			default: "card",
+		},
+		itemGroupMode: {
+			type: String,
+			default: "tabs",
+		},
 	},
 	computed: {
 		appBarColor() {
@@ -308,7 +427,17 @@ export default {
 			}
 		},
 	},
-	emits: ["nav-click", "go-desk", "show-offline-invoices"],
+	emits: [
+		"nav-click",
+		"go-desk",
+		"show-offline-invoices",
+		"show-offers",
+		"show-coupons",
+		"show-item-settings",
+		"reload-items",
+		"change-view",
+		"change-group-mode",
+	],
 };
 </script>
 
@@ -360,6 +489,70 @@ export default {
 	/* Default to normal row */
 	flex-shrink: 0;
 	min-width: max-content;
+}
+
+/* Quick Actions Section (Offers, Coupons, Settings) */
+.pos-navbar-quick-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-left: 16px;
+	flex-direction: row;
+}
+
+.rtl-quick-actions {
+	flex-direction: row-reverse;
+	margin-right: 16px;
+	margin-left: 0;
+}
+
+.ltr-quick-actions {
+	flex-direction: row;
+	margin-left: 16px;
+	margin-right: 0;
+}
+
+.quick-action-btn {
+	transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-action-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(229, 20, 1, 0.15);
+}
+
+.view-toggle,
+.group-mode-toggle {
+	border: 1px solid rgba(229, 20, 1, 0.3) !important;
+	border-radius: 8px !important;
+	background: rgba(229, 20, 1, 0.05) !important;
+}
+
+.view-toggle :deep(.v-btn),
+.group-mode-toggle :deep(.v-btn) {
+	min-width: 36px !important;
+	color: #e51401 !important;
+}
+
+.view-toggle :deep(.v-btn--active),
+.group-mode-toggle :deep(.v-btn--active) {
+	background: #e51401 !important;
+	color: white !important;
+}
+
+@media (max-width: 768px) {
+	.pos-navbar-quick-actions {
+		gap: 4px;
+		margin-left: 8px;
+	}
+	.rtl-quick-actions {
+		margin-right: 8px;
+		margin-left: 0;
+	}
+	.view-toggle,
+	.group-mode-toggle {
+		display: none !important;
+	}
 }
 
 .pos-navbar-title-compact {

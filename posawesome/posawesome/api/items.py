@@ -1108,3 +1108,229 @@ def get_item_brand(item_code):
     if not brand and data.variant_of:
         brand = frappe.db.get_value("Item", data.variant_of, "brand")
     return normalize_brand(brand) if brand else ""
+
+
+@frappe.whitelist()
+def search_by_plu(plu_code, pos_profile=None):
+    """
+    Search for items by PLU code (for produce/grocery items)
+    
+    Args:
+        plu_code: PLU code to search for
+        pos_profile: POS Profile name (optional, for warehouse context)
+        
+    Returns:
+        list: List of items matching the PLU code
+    """
+    if not plu_code:
+        return []
+    
+    # Get warehouse from POS Profile if provided
+    warehouse = None
+    if pos_profile:
+        warehouse = frappe.db.get_value("POS Profile", pos_profile, "warehouse")
+    
+    # Search for items with matching PLU code
+    # PLU codes are typically stored in a custom field or barcode field
+    filters = {
+        "disabled": 0,
+        "is_sales_item": 1,
+    }
+    
+    # Check if PLU code field exists (custom field)
+    if frappe.db.has_column("Item", "plu_code"):
+        filters["plu_code"] = plu_code
+        items = frappe.get_all(
+            "Item",
+            filters=filters,
+            fields=[
+                "item_code",
+                "item_name",
+                "image",
+                "standard_rate as rate",
+                "stock_uom",
+                "item_group",
+                "description",
+                "plu_code",
+                "is_stock_item",
+            ],
+        )
+    else:
+        # Fallback: search in barcodes
+        barcodes = frappe.get_all(
+            "Item Barcode",
+            filters={"barcode": plu_code},
+            fields=["parent as item_code"],
+        )
+        
+        if not barcodes:
+            return []
+        
+        item_codes = [b.item_code for b in barcodes]
+        items = frappe.get_all(
+            "Item",
+            filters={"item_code": ["in", item_codes], **filters},
+            fields=[
+                "item_code",
+                "item_name",
+                "image",
+                "standard_rate as rate",
+                "stock_uom",
+                "item_group",
+                "description",
+                "is_stock_item",
+            ],
+        )
+    
+    # Add stock quantity if warehouse provided
+    if warehouse and items:
+        for item in items:
+            if item.get("is_stock_item"):
+                item["actual_qty"] = get_stock_qty(item.item_code, warehouse)
+            else:
+                item["actual_qty"] = 999999  # Service items
+    
+    return items
+
+
+@frappe.whitelist()
+def get_quick_plu_items(pos_profile=None, limit=12):
+    """
+    Get frequently used PLU items for quick access
+    
+    Args:
+        pos_profile: POS Profile name
+        limit: Maximum number of items to return
+        
+    Returns:
+        list: Popular PLU items with images
+    """
+    # This would ideally track popular items by sales frequency
+    # For now, return items with PLU codes that have images
+    
+    filters = {
+        "disabled": 0,
+        "is_sales_item": 1,
+        "image": ["!=", ""],
+    }
+    
+    if frappe.db.has_column("Item", "plu_code"):
+        filters["plu_code"] = ["!=", ""]
+    
+    items = frappe.get_all(
+        "Item",
+        filters=filters,
+        fields=[
+            "item_code",
+            "item_name",
+            "image",
+            "standard_rate as rate",
+            "stock_uom",
+            "item_group",
+            "plu_code" if frappe.db.has_column("Item", "plu_code") else "'4011' as plu_code",
+        ],
+        order_by="modified desc",
+        limit=limit,
+    )
+    
+    # Add stock if POS Profile provided
+    if pos_profile:
+        warehouse = frappe.db.get_value("POS Profile", pos_profile, "warehouse")
+        if warehouse:
+            for item in items:
+                item["actual_qty"] = get_stock_qty(item.item_code, warehouse)
+    
+    return items
+
+
+@frappe.whitelist()
+def parse_scale_barcode(barcode, prefix="02"):
+    """
+    Parse barcode from weighing scale
+    
+    Scale barcodes typically have format: [prefix][item_code][weight][check_digit]
+    Example: 02123450125051
+    - 02: Scale prefix
+    - 12345: Item code (5 digits)
+    - 01250: Weight in grams (1.250 kg)
+    - 5: Check digit
+    
+    Args:
+        barcode: Complete barcode string
+        prefix: Scale barcode prefix (default "02")
+        
+    Returns:
+        dict: Parsed barcode data with item_code and weight
+    """
+    if not barcode or not barcode.startswith(prefix):
+        return None
+    
+    try:
+        # Parse based on standard format
+        # Format: [2 digit prefix][5 digit item][5 digit weight][1 check digit]
+        if len(barcode) < 13:
+            return None
+        
+        item_code_str = barcode[2:7]  # 5 digits
+        weight_str = barcode[7:12]     # 5 digits (3 decimal places)
+        
+        # Convert weight (assuming 3 decimal places)
+        weight = float(weight_str) / 1000  # Convert to kg
+        
+        # Find item by code
+        # Try direct match first
+        item = frappe.db.get_value(
+            "Item",
+            {"item_code": item_code_str, "disabled": 0},
+            ["item_code", "item_name", "standard_rate", "stock_uom"],
+            as_dict=True
+        )
+        
+        if not item:
+            # Try with leading zeros removed
+            item_code_int = str(int(item_code_str))
+            item = frappe.db.get_value(
+                "Item",
+                {"item_code": item_code_int, "disabled": 0},
+                ["item_code", "item_name", "standard_rate", "stock_uom"],
+                as_dict=True
+            )
+        
+        if item:
+            return {
+                "item_code": item.item_code,
+                "item_name": item.item_name,
+                "weight": weight,
+                "rate": item.standard_rate,
+                "uom": item.stock_uom,
+                "amount": weight * item.standard_rate,
+                "is_weighted_item": True,
+            }
+        else:
+            return {
+                "error": "Item not found",
+                "item_code": item_code_str,
+                "weight": weight,
+            }
+            
+    except Exception as e:
+        frappe.log_error(f"Scale barcode parse error: {str(e)}", "Scale Barcode")
+        return None
+
+
+def get_stock_qty(item_code, warehouse):
+    """
+    Get current stock quantity for item in warehouse
+    
+    Args:
+        item_code: Item code
+        warehouse: Warehouse name
+        
+    Returns:
+        float: Actual quantity in stock
+    """
+    try:
+        from erpnext.stock.utils import get_latest_stock_qty
+        return get_latest_stock_qty(item_code, warehouse) or 0
+    except Exception:
+        return 0

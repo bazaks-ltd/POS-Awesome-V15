@@ -48,8 +48,9 @@
 			<!-- Add dynamic-padding wrapper like Invoice component -->
 			<div class="dynamic-padding">
 				<div class="sticky-header">
-					<v-row class="items">
-						<v-col class="pb-0">
+					<!-- Search Bar Only (Offers, Coupons, Settings moved to navbar) -->
+					<v-row class="items mb-2" no-gutters>
+						<v-col cols="12">
 							<v-text-field
 								density="compact"
 								clearable
@@ -99,9 +100,15 @@
 									</v-btn>
 								</template>
 							</v-text-field>
+						</v-col>
+					</v-row>
+					
+					<!-- Manual Scan Input (Expandable) -->
+					<v-row class="items" v-if="showManualScanInput" no-gutters>
+						<v-col cols="12">
 							<v-expand-transition>
-								<div v-if="showManualScanInput" class="manual-scan-container mt-2">
-									<div class="manual-scan-text mb-3">
+								<div class="manual-scan-container mb-2">
+									<div class="manual-scan-text mb-2">
 										<div class="text-subtitle-2 font-weight-medium">
 											{{ __("Manual or Hardware Scanner Input") }}
 										</div>
@@ -141,7 +148,11 @@
 								</div>
 							</v-expand-transition>
 						</v-col>
-						<v-col cols="3" class="pb-0" v-if="pos_profile.posa_input_qty">
+					</v-row>
+					
+					<!-- Qty and New Line inputs (if enabled) -->
+					<v-row class="items mb-2" v-if="pos_profile.posa_input_qty || pos_profile.posa_new_line" no-gutters>
+						<v-col v-if="pos_profile.posa_input_qty" cols="3" class="pr-2">
 							<v-text-field
 								density="compact"
 								variant="solo"
@@ -155,7 +166,7 @@
 								@focus="clearQty"
 							></v-text-field>
 						</v-col>
-						<v-col cols="2" class="pb-0" v-if="pos_profile.posa_new_line">
+						<v-col v-if="pos_profile.posa_new_line" cols="auto">
 							<v-checkbox
 								v-model="new_line"
 								color="accent"
@@ -165,231 +176,203 @@
 								hide-details
 							></v-checkbox>
 						</v-col>
-						<v-col cols="12" class="dynamic-margin-xs">
-							<div class="settings-container">
-							<v-btn
-								density="compact"
-								variant="text"
-								prepend-icon="mdi-cog-outline"
-								@click="toggleItemSettings"
-								class="settings-btn"
-								style="color: #e51401 !important;"
-							>
-								{{ __("Settings") }}
-							</v-btn>
-							<v-spacer></v-spacer>
-							<v-btn
-								density="compact"
-								variant="text"
-								prepend-icon="mdi-refresh"
-								@click="forceReloadItems"
-								class="settings-btn"
-								style="color: #e51401 !important;"
-							>
-								{{ __("Reload Items") }}
-							</v-btn>
-
-								<v-dialog v-model="show_item_settings" max-width="400px">
-									<v-card>
-										<v-card-title class="text-h6 pa-4 d-flex align-center">
-											<span>{{ __("Item Selector Settings") }}</span>
-											<v-spacer></v-spacer>
-											<v-btn
-												icon="mdi-close"
-												variant="text"
-												density="compact"
-												@click="show_item_settings = false"
-											>
-											</v-btn>
-										</v-card-title>
-										<v-divider></v-divider>
-										<v-card-text class="pa-4">
-											<v-switch
-												v-model="temp_hide_qty_decimals"
-												:label="__('Hide quantity decimals')"
-												hide-details
-												density="compact"
-												color="primary"
-												class="mb-2"
-											></v-switch>
-											<v-switch
-												v-model="temp_hide_zero_rate_items"
-												:label="__('Hide zero rated items')"
-												hide-details
-												density="compact"
-												color="primary"
-											></v-switch>
-											<v-switch
-												v-model="temp_enable_custom_items_per_page"
-												:label="__('Custom items per page')"
-												hide-details
-												density="compact"
-												color="primary"
-												class="mb-2"
-											>
-											</v-switch>
-											<v-checkbox
-												v-model="temp_force_server_items"
-												:label="
-													__('Always fetch items from server (ignore local cache)')
-												"
-												hide-details
-												density="compact"
-												color="primary"
-												class="mb-2"
-											></v-checkbox>
-											<v-text-field
-												v-if="temp_enable_custom_items_per_page"
-												v-model="temp_items_per_page"
-												type="number"
-												density="compact"
-												variant="outlined"
-												color="primary"
-												hide-details
-												:label="__('Items per page')"
-												class="mb-2 pos-themed-input"
-											>
-											</v-text-field>
-										</v-card-text>
-									<v-card-actions class="pa-4 pt-0">
-										<v-btn color="error" variant="text" @click="cancelItemSettings"
-											>{{ __("Cancel") }}
-										</v-btn>
-										<v-spacer></v-spacer>
-										<v-btn variant="tonal" @click="applyItemSettings" style="background-color: #e51401 !important; color: white !important;"
-											>{{ __("Apply") }}
-										</v-btn>
-									</v-card-actions>
-									</v-card>
-								</v-dialog>
-							</div>
-						</v-col>
 					</v-row>
+					
+					<!-- Settings Dialog (with added View Mode toggle) -->
+					<v-dialog v-model="show_item_settings" max-width="400px">
+						<v-card>
+							<v-card-title class="text-h6 pa-4 d-flex align-center">
+								<span>{{ __("Item Selector Settings") }}</span>
+								<v-spacer></v-spacer>
+								<v-btn
+									icon="mdi-close"
+									variant="text"
+									density="compact"
+									@click="show_item_settings = false"
+								>
+								</v-btn>
+							</v-card-title>
+							<v-divider></v-divider>
+							<v-card-text class="pa-4">
+								<!-- View Mode Toggle removed (now in navbar) -->
+								
+								<!-- Item Settings -->
+								<v-switch
+									v-model="temp_hide_qty_decimals"
+									:label="__('Hide quantity decimals')"
+									hide-details
+									density="compact"
+									color="primary"
+									class="mb-2"
+								></v-switch>
+								<v-switch
+									v-model="temp_hide_zero_rate_items"
+									:label="__('Hide zero rated items')"
+									hide-details
+									density="compact"
+									color="primary"
+									class="mb-2"
+								></v-switch>
+								<v-switch
+									v-model="temp_enable_custom_items_per_page"
+									:label="__('Custom items per page')"
+									hide-details
+									density="compact"
+									color="primary"
+									class="mb-2"
+								>
+								</v-switch>
+								<v-checkbox
+									v-model="temp_force_server_items"
+									:label="
+										__('Always fetch items from server (ignore local cache)')
+									"
+									hide-details
+									density="compact"
+									color="primary"
+									class="mb-2"
+								></v-checkbox>
+								<v-text-field
+									v-if="temp_enable_custom_items_per_page"
+									v-model="temp_items_per_page"
+									type="number"
+									density="compact"
+									variant="outlined"
+									color="primary"
+									hide-details
+									:label="__('Items per page')"
+									class="mb-2 pos-themed-input"
+								>
+								</v-text-field>
+							</v-card-text>
+							<v-card-actions class="pa-4 pt-0">
+								<v-btn color="error" variant="text" @click="cancelItemSettings"
+									>{{ __("Cancel") }}
+								</v-btn>
+								<v-spacer></v-spacer>
+								<v-btn variant="tonal" @click="applyItemSettings" style="background-color: #e51401 !important; color: white !important;"
+									>{{ __("Apply") }}
+								</v-btn>
+							</v-card-actions>
+						</v-card>
+					</v-dialog>
+					
+					<!-- Item Display Area -->
 				</div>
 				<v-row class="items">
 					<v-col cols="12" class="pt-0 mt-0">
 						<div v-if="items_view == 'card'" class="items-card-container">
-							<div v-if="loading" class="items-card-grid">
+							<div v-if="loading" class="items-card-grid-modern">
 								<Skeleton v-for="n in 8" :key="n" class="mb-4" height="120" />
 							</div>
-							<RecycleScroller
+							<!-- Modern CSS Grid Layout (No RecycleScroller) -->
+							<div
 								v-else
 								ref="itemsContainer"
-								class="virtual-scroller"
-								:list-class="['items-card-grid', { 'item-container': isOverflowing }]"
-								:items="displayedItems"
-								key-field="item_code"
-								:item-size="cardRowHeight"
-								:grid-items="cardColumns"
-								:item-secondary-size="cardColumnWidth"
-								:buffer="virtualScrollBuffer"
-								:emit-update="true"
-								@update="onVirtualRangeUpdate"
+								class="items-card-grid-modern"
 							>
-								<template #default="{ item }">
-									<div
-										v-if="item"
-										:key="item.item_code"
-										class="card-item-card"
-										@click="select_item($event, item)"
-										:draggable="true"
-										@dragstart="onDragStart($event, item)"
-										@dragend="onDragEnd"
-									>
-										<div class="card-item-image-container">
-											<v-img
-												:src="item.image || placeholderImage"
-												class="card-item-image"
-												aspect-ratio="1"
-												:alt="item.item_name"
-											>
-												<template #placeholder>
-													<div class="image-placeholder">
-														<v-icon size="40" color="grey-lighten-2">
-															mdi-image
-														</v-icon>
-													</div>
-												</template>
-											</v-img>
+								<div
+									v-for="item in displayedItems"
+									:key="item.item_code"
+									class="card-item-card-modern"
+									@click="select_item($event, item)"
+									:draggable="true"
+									@dragstart="onDragStart($event, item)"
+									@dragend="onDragEnd"
+								>
+									<div class="card-item-image-container">
+										<v-img
+											:src="item.image || placeholderImage"
+											class="card-item-image"
+											aspect-ratio="1"
+											:alt="item.item_name"
+										>
+											<template #placeholder>
+												<div class="image-placeholder">
+													<v-icon size="40" color="grey-lighten-2">
+														mdi-image
+													</v-icon>
+												</div>
+											</template>
+										</v-img>
+									</div>
+									<div class="card-item-content">
+										<div class="card-item-header">
+											<h4 class="card-item-name">{{ item.item_name }}</h4>
+											<span class="card-item-code">{{ item.item_code }}</span>
 										</div>
-										<div class="card-item-content">
-											<div class="card-item-header">
-												<h4 class="card-item-name">{{ item.item_name }}</h4>
-												<span class="card-item-code">{{ item.item_code }}</span>
-											</div>
-											<div class="card-item-details">
-												<div class="card-item-price">
-													<div class="primary-price">
-														<span class="currency-symbol">
-															{{
-																currencySymbol(
-																	item.original_currency ||
-																		pos_profile.currency,
-																)
-															}}
-														</span>
-														<span class="price-amount">
-															{{
-																format_currency(
+										<div class="card-item-details">
+											<div class="card-item-price">
+												<div class="primary-price">
+													<span class="currency-symbol">
+														{{
+															currencySymbol(
+																item.original_currency ||
+																	pos_profile.currency,
+															)
+														}}
+													</span>
+													<span class="price-amount">
+														{{
+															format_currency(
+																item.base_price_list_rate ??
+																	item.rate ??
+																	0,
+																item.original_currency ||
+																	pos_profile.currency,
+																ratePrecision(
 																	item.base_price_list_rate ??
 																		item.rate ??
 																		0,
-																	item.original_currency ||
-																		pos_profile.currency,
-																	ratePrecision(
-																		item.base_price_list_rate ??
-																			item.rate ??
-																			0,
-																	),
-																)
-															}}
-														</span>
-													</div>
-													<div
-														v-if="
-															pos_profile.posa_allow_multi_currency &&
-															selected_currency !== pos_profile.currency
-														"
-														class="secondary-price"
-													>
-														<span class="currency-symbol">
-															{{ currencySymbol(selected_currency) }}
-														</span>
-														<span class="price-amount">
-															{{
-																format_currency(
-																	item.rate,
-																	selected_currency,
-																	ratePrecision(item.rate),
-																)
-															}}
-														</span>
-													</div>
-												</div>
-												<div class="card-item-stock">
-													<v-icon size="small" class="stock-icon">
-														mdi-package-variant
-													</v-icon>
-													<span
-														class="stock-amount"
-														:class="{
-															'negative-number': isNegative(item.actual_qty),
-														}"
-													>
-														{{
-															format_number(
-																item.actual_qty,
-																hide_qty_decimals ? 0 : 2,
-															) || 0
+																),
+															)
 														}}
 													</span>
-													<span class="stock-uom">{{ item.stock_uom || "" }}</span>
 												</div>
+												<div
+													v-if="
+														pos_profile.posa_allow_multi_currency &&
+														selected_currency !== pos_profile.currency
+													"
+													class="secondary-price"
+												>
+													<span class="currency-symbol">
+														{{ currencySymbol(selected_currency) }}
+													</span>
+													<span class="price-amount">
+														{{
+															format_currency(
+																item.rate,
+																selected_currency,
+																ratePrecision(item.rate),
+															)
+														}}
+													</span>
+												</div>
+											</div>
+											<div class="card-item-stock">
+												<v-icon size="small" class="stock-icon">
+													mdi-package-variant
+												</v-icon>
+												<span
+													class="stock-amount"
+													:class="{
+														'negative-number': isNegative(item.actual_qty),
+													}"
+												>
+													{{
+														format_number(
+															item.actual_qty,
+															hide_qty_decimals ? 0 : 2,
+														) || 0
+													}}
+												</span>
+												<span class="stock-uom">{{ item.stock_uom || "" }}</span>
 											</div>
 										</div>
 									</div>
-								</template>
-							</RecycleScroller>
+								</div>
+							</div>
 						</div>
 						<div v-else class="items-table-container">
 							<v-data-table-virtual
@@ -452,59 +435,14 @@
 				</v-row>
 			</div>
 		</v-card>
-		<v-card class="cards mb-0 mt-3 dynamic-padding resizable" style="resize: vertical; overflow: auto">
-			<v-row no-gutters align="center" justify="center" class="dynamic-spacing-sm">
-				<v-col cols="12" class="mb-2">
-					<v-select
-						:items="items_group"
-						:label="frappe._('Items Group')"
-						density="compact"
-						variant="solo"
-						hide-details
-						v-model="item_group"
-					></v-select>
-				</v-col>
-				<v-col cols="12" class="mb-2" v-if="pos_profile.posa_enable_price_list_dropdown !== false">
-					<v-text-field
-						density="compact"
-						variant="solo"
-						color="primary"
-						:label="frappe._('Price List')"
-						hide-details
-						:model-value="active_price_list"
-						readonly
-					></v-text-field>
-				</v-col>
-			<v-col cols="3" class="dynamic-margin-xs">
-				<v-btn-toggle v-model="items_view" group density="compact" rounded style="--v-btn-toggle-color: #e51401;">
-					<v-btn size="small" value="list" style="background-color: #e51401 !important; color: white !important;">{{ __("List") }}</v-btn>
-					<v-btn size="small" value="card" style="background-color: #e51401 !important; color: white !important;">{{ __("Card") }}</v-btn>
-				</v-btn-toggle>
-			</v-col>
-			<v-col cols="5" class="dynamic-margin-xs">
-				<v-btn
-					size="small"
-					block
-					variant="text"
-					@click="show_offers"
-					class="action-btn-consistent"
-					style="color: #fb1b07 !important;"
-				>
-					{{ offersCount }} {{ __("Offers") }}
-				</v-btn>
-			</v-col>
-			<v-col cols="4" class="dynamic-margin-xs">
-				<v-btn
-					size="small"
-					block
-					variant="text"
-					@click="show_coupons"
-					class="action-btn-consistent"
-					style="color: #e51401 !important;"
-					>{{ couponsCount }} {{ __("Coupons") }}</v-btn
-				>
-			</v-col>
-			</v-row>
+		<!-- Category Navigation Card -->
+		<v-card class="cards mb-0 mt-3 dynamic-padding" style="overflow: visible;">
+			<CategoryNav
+				:mode="categoryNavMode"
+				:categories="categoryNavItems"
+				:active-category="item_group"
+				@category-selected="onCategorySelected"
+			/>
 		</v-card>
 
 		<!-- Camera Scanner Component -->
@@ -567,6 +505,7 @@ import placeholderImage from "./placeholder-image.png";
 import Skeleton from "../ui/Skeleton.vue";
 import { useCustomersStore } from "../../stores/customersStore.js";
 import { storeToRefs } from "pinia";
+import CategoryNav from "../base/CategoryNav.vue";
 
 export default {
 	mixins: [format],
@@ -598,6 +537,7 @@ export default {
 		CameraScanner,
 		Skeleton,
 		RecycleScroller,
+		CategoryNav,
 	},
 	data: () => ({
 		pos_profile: {},
@@ -684,6 +624,8 @@ export default {
 		scanQueuedCode: "",
 		refreshInFlight: false,
 		clearingSearch: false,
+		// Runtime item group mode (can be changed dynamically, overrides POS Profile default)
+		runtime_item_group_mode: null,
 	}),
 
 	watch: {
@@ -901,6 +843,53 @@ export default {
 	},
 
 	methods: {
+		// Handle category selection from CategoryNav component
+		onCategorySelected(category) {
+			this.item_group = category;
+			// Trigger search refresh
+			this.search = this.search || '';
+		},
+		
+		// Get icon for category based on name
+		getCategoryIcon(categoryName) {
+			if (!categoryName) return 'mdi-folder';
+			
+			const lowerName = categoryName.toLowerCase();
+			
+			// Icon mapping for common categories
+			const iconMap = {
+				'all': 'mdi-view-grid',
+				'products': 'mdi-package-variant',
+				'services': 'mdi-hand-heart',
+				'raw materials': 'mdi-cube',
+				'electronics': 'mdi-flash',
+				'clothing': 'mdi-tshirt-crew',
+				'food': 'mdi-food-apple',
+				'grocery': 'mdi-cart',
+				'beverages': 'mdi-cup',
+				'pharmacy': 'mdi-medical-bag',
+				'health': 'mdi-hospital-box',
+				'books': 'mdi-book-open-variant',
+				'stationery': 'mdi-pencil',
+				'furniture': 'mdi-sofa',
+				'tools': 'mdi-tools',
+				'automotive': 'mdi-car',
+				'sports': 'mdi-basketball',
+				'toys': 'mdi-toy-brick',
+				'cosmetics': 'mdi-bottle-tonic-plus',
+				'accessories': 'mdi-shopping',
+			};
+			
+			// Check for keyword matches
+			for (const [keyword, icon] of Object.entries(iconMap)) {
+				if (lowerName.includes(keyword)) {
+					return icon;
+				}
+			}
+			
+			return 'mdi-folder';
+		},
+		
 		// Performance optimization: Memoized search function
 		memoizedSearch(searchTerm, itemGroup) {
 			const cacheKey = `${searchTerm || ""}_${itemGroup || "ALL"}`;
@@ -3299,6 +3288,37 @@ export default {
 	},
 
 	computed: {
+		// Category Navigation Mode - supports dynamic switching
+		categoryNavMode() {
+			// Use runtime mode if set, otherwise fall back to POS Profile
+			if (this.runtime_item_group_mode) {
+				return this.runtime_item_group_mode;
+			}
+			
+			// Check POS Profile for item grouping mode setting (default)
+			// Supported modes: 'tabs', 'tree', 'filters'
+			const mode = this.pos_profile?.posa_item_group_mode || 
+						 this.pos_profile?.item_group_display_mode ||
+						 'tabs';
+			
+			// Validate mode is supported
+			const validModes = ['tabs', 'tree', 'filters'];
+			return validModes.includes(mode) ? mode : 'tabs';
+		},
+		
+		// Format item groups for CategoryNav component
+		categoryNavItems() {
+			if (!this.items_group || this.items_group.length === 0) {
+				return [];
+			}
+			
+			return this.items_group.map(group => ({
+				name: group,
+				title: group,
+				icon: this.getCategoryIcon(group),
+			}));
+		},
+		
 		usesLimitSearch() {
 			const rawValue =
 				this.pos_profile?.pose_use_limit_search ?? this.pos_profile?.posa_use_limit_search;
@@ -3606,11 +3626,34 @@ export default {
 		this.eventBus.on("update_offers_counters", (data) => {
 			this.offersCount = data.offersCount;
 			this.appliedOffersCount = data.appliedOffersCount;
+			// Emit to Home.vue for navbar display
+			this.eventBus.emit("update_offers_count", data.offersCount);
 		});
 		this.eventBus.on("update_coupons_counters", (data) => {
 			this.couponsCount = data.couponsCount;
 			this.appliedCouponsCount = data.appliedCouponsCount;
+			// Emit to Home.vue for navbar display
+			this.eventBus.emit("update_coupons_count", data.couponsCount);
 		});
+		// Listen for navbar actions
+		this.eventBus.on("show_item_settings", () => {
+			this.show_item_settings = true;
+		});
+		this.eventBus.on("reload_items", () => {
+			this.forceReloadItems();
+		});
+		this.eventBus.on("change_items_view", (view) => {
+			this.items_view = view;
+		});
+		this.eventBus.on("change_item_group_mode", (mode) => {
+			// Update runtime mode (overrides POS Profile)
+			this.runtime_item_group_mode = mode;
+		});
+		
+		// Emit initial view mode and group mode to navbar
+		this.eventBus.emit("update_items_view", this.items_view);
+		this.eventBus.emit("update_item_group_mode", this.categoryNavMode);
+
                 this.eventBus.on("update_customer_price_list", (data) => {
                         const fallback = this.pos_profile?.selling_price_list || null;
                         if (data === null || data === undefined) {
@@ -4095,6 +4138,137 @@ export default {
 	}
 }
 
+/* Modern CSS Grid Layout - Clean and Responsive */
+.items-card-grid-modern {
+	display: grid !important;
+	/* Default: Optimized for standard desktops and large laptops */
+	/* Use auto-fit to collapse empty columns and prevent overflow */
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+	gap: 20px !important;
+	padding: 20px !important;
+	height: calc(100% - 80px);
+	overflow-y: auto;
+	overflow-x: hidden;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+	/* Ensure proper box sizing and width constraints */
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 100%;
+	/* Performance optimizations */
+	contain: layout style;
+	will-change: scroll-position;
+	transform: translate3d(0, 0, 0);
+}
+
+.card-item-card-modern {
+	display: flex !important;
+	flex-direction: column !important;
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	transition: all 0.2s ease;
+	cursor: pointer;
+	overflow: hidden;
+	height: 100%;
+	min-height: 280px;
+	/* Ensure proper box sizing to prevent overflow */
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 100%;
+}
+
+.card-item-card-modern:hover {
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+	transform: translateY(-2px);
+}
+
+.card-item-card-modern:active {
+	transform: translateY(0);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive breakpoints for modern grid */
+
+/* Extra Large Desktops (1920px+) */
+@media screen and (min-width: 1920px) {
+	.items-card-grid-modern {
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+		gap: 24px !important;
+		padding: 24px !important;
+	}
+}
+
+/* Large Desktops (1600px - 1920px) */
+@media screen and (min-width: 1600px) and (max-width: 1919px) {
+	.items-card-grid-modern {
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+		gap: 22px !important;
+		padding: 22px !important;
+	}
+}
+
+/* Standard Laptops (1366px - 1599px) - Most Common Laptop Size */
+@media screen and (min-width: 1366px) and (max-width: 1599px) {
+	.items-card-grid-modern {
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+		gap: 18px !important;
+		padding: 18px !important;
+	}
+}
+
+/* Small Laptops (1280px - 1365px) */
+@media screen and (min-width: 1280px) and (max-width: 1365px) {
+	.items-card-grid-modern {
+		grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)) !important;
+		gap: 16px !important;
+		padding: 16px !important;
+	}
+}
+
+/* Tablets Landscape (1024px - 1279px) */
+@media screen and (min-width: 1024px) and (max-width: 1279px) {
+	.items-card-grid-modern {
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+		gap: 18px !important;
+		padding: 18px !important;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.items-card-grid-modern {
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+		gap: 16px !important;
+		padding: 16px !important;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.items-card-grid-modern {
+		grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+		gap: 12px !important;
+		padding: 12px !important;
+	}
+}
+
+/* Modern grid scrollbar */
+.items-card-grid-modern::-webkit-scrollbar {
+	width: 8px;
+}
+
+.items-card-grid-modern::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.items-card-grid-modern::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.2);
+	border-radius: 4px;
+}
+
+.items-card-grid-modern::-webkit-scrollbar-thumb:hover {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
 .virtual-scroller {
 	height: calc(100% - 80px);
 	overflow-y: auto;
@@ -4310,6 +4484,14 @@ div.vue-recycle-scroller__item-wrapper.items-card-grid > div.vue-recycle-scrolle
 	flex-wrap: wrap !important;
 	justify-content: center !important;
 	align-items: stretch !important;
+}
+
+/* Items card container - proper width constraints */
+.items-card-container {
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
 }
 
 .items-card-container .vue-recycle-scroller__item-wrapper {

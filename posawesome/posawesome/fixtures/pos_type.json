@@ -1,0 +1,233 @@
+[
+  {
+    "doctype": "POS Type",
+    "pos_type_name": "Grocery Store",
+    "description": "Fast checkout for grocery stores with scale integration, PLU codes, and split payments",
+    "icon": "mdi-cart",
+    "enabled": 1,
+    "is_default": 0,
+    "ui_configuration": {
+      "enabled_features": [
+        "barcode_scanning",
+        "plu_codes",
+        "weighted_items",
+        "split_payments",
+        "quick_tender",
+        "age_verification",
+        "loyalty_points",
+        "customer_display",
+        "quick_touch_grid"
+      ],
+      "item_card_layout": {
+        "show_image": true,
+        "show_stock": true,
+        "show_price": true,
+        "show_unit_price": true,
+        "show_weight": true,
+        "show_plu": true,
+        "card_size": "large",
+        "touch_optimized": true
+      },
+      "quick_actions": [
+        "scan_item",
+        "enter_plu",
+        "weigh_item",
+        "quick_quantity",
+        "void_item",
+        "age_verify"
+      ],
+      "category_navigation_style": "quick_filters",
+      "layout_mode": "fast_checkout",
+      "plu_keypad": {
+        "enabled": true,
+        "position": "right_panel",
+        "quick_access": true
+      },
+      "scan_queue": {
+        "enabled": true,
+        "max_queue_size": 10,
+        "auto_process": true
+      },
+      "touch_gesture_mappings": {
+        "swipe_left": "void_item",
+        "swipe_right": "quick_quantity",
+        "long_press": "item_details",
+        "double_tap": "add_to_cart"
+      }
+    },
+    "hardware_configuration": {
+      "barcode_scanner": {
+        "enabled": true,
+        "type": "keyboard_wedge",
+        "handle_scale_barcodes": true,
+        "scale_barcode_prefix": "02",
+        "scan_queue_enabled": true
+      },
+      "printer": {
+        "enabled": true,
+        "type": "esc_pos",
+        "auto_print": true,
+        "paper_width": 80,
+        "show_tax_breakdown": true,
+        "show_loyalty_points": true
+      },
+      "cash_drawer": {
+        "enabled": true,
+        "trigger_via_printer": true,
+        "manual_open_enabled": true,
+        "require_manager_override": true
+      },
+      "scale": {
+        "enabled": true,
+        "type": "serial",
+        "protocol": "mettler_toledo",
+        "port": "COM3",
+        "baud_rate": 9600,
+        "auto_read_weight": true,
+        "weight_unit": "kg"
+      },
+      "customer_display": {
+        "enabled": true,
+        "type": "web",
+        "show_running_total": true,
+        "show_loyalty_points": true,
+        "show_savings": true,
+        "font_size": "large"
+      },
+      "card_reader": {
+        "enabled": true,
+        "type": "stripe_terminal",
+        "pci_compliant": true,
+        "tokenize_cards": true
+      }
+    },
+    "workflow_configuration": {
+      "require_customer": false,
+      "allow_negative_stock": false,
+      "auto_print_receipt": true,
+      "split_payment_enabled": true,
+      "max_split_payments": 4,
+      "loyalty_program_enabled": true,
+      "loyalty_auto_apply": true,
+      "offline_mode_enabled": true,
+      "offline_stock_validation": "warn",
+      "age_restricted_items": {
+        "enabled": true,
+        "require_verification": true,
+        "min_age": 21
+      },
+      "promotions": {
+        "auto_apply": true,
+        "show_savings": true,
+        "types": ["bogo", "percentage", "amount_off", "buy_x_get_y"]
+      },
+      "tax_configuration": {
+        "show_breakdown": true,
+        "multiple_rates_enabled": true,
+        "item_specific_tax": true
+      },
+      "quick_tender": {
+        "enabled": true,
+        "cash_shortcuts": [5, 10, 20, 50, 100]
+      }
+    }
+  },
+  {
+    "doctype": "POS Type",
+    "pos_type_name": "Pharmacy",
+    "description": "Pharmacy POS with prescription management and drug interaction alerts",
+    "icon": "mdi-medical-bag",
+    "enabled": 1,
+    "is_default": 0,
+    "ui_configuration": {
+      "enabled_features": [
+        "prescriptions",
+        "batches",
+        "serial",
+        "drug_interactions",
+        "insurance_claims",
+        "controlled_substances"
+      ],
+      "item_card_layout": {
+        "show_image": true,
+        "show_stock": true,
+        "show_price": true,
+        "show_expiry": true,
+        "show_generic_name": true
+      },
+      "category_navigation_style": "tree",
+      "search_priority": "high"
+    },
+    "hardware_configuration": {
+      "barcode_scanner": {"enabled": true, "type": "keyboard_wedge"},
+      "printer": {"enabled": true, "type": "esc_pos"},
+      "signature_pad": {"enabled": true}
+    },
+    "workflow_configuration": {
+      "require_customer": true,
+      "require_prescription": true,
+      "verify_insurance": true,
+      "loyalty_program_enabled": true
+    }
+  },
+  {
+    "doctype": "POS Type",
+    "pos_type_name": "Service & Spa",
+    "description": "Service-based POS for spas, salons, and service providers",
+    "icon": "mdi-spa",
+    "enabled": 1,
+    "is_default": 0,
+    "ui_configuration": {
+      "enabled_features": [
+        "service_duration",
+        "resource_booking",
+        "packages",
+        "tips",
+        "membership"
+      ],
+      "item_card_layout": {
+        "show_image": true,
+        "show_price": true,
+        "show_duration": true,
+        "show_provider": true
+      },
+      "category_navigation_style": "tabs"
+    },
+    "hardware_configuration": {
+      "printer": {"enabled": true, "type": "esc_pos"},
+      "card_reader": {"enabled": true}
+    },
+    "workflow_configuration": {
+      "require_customer": true,
+      "split_payment_enabled": true,
+      "tip_enabled": true,
+      "loyalty_program_enabled": true
+    }
+  },
+  {
+    "doctype": "POS Type",
+    "pos_type_name": "Retail",
+    "description": "General retail POS for various merchandise",
+    "icon": "mdi-store",
+    "enabled": 1,
+    "is_default": 1,
+    "ui_configuration": {
+      "enabled_features": ["variants", "bundles", "discounts", "gift_cards"],
+      "item_card_layout": {
+        "show_image": true,
+        "show_stock": true,
+        "show_price": true
+      },
+      "category_navigation_style": "hybrid"
+    },
+    "hardware_configuration": {
+      "barcode_scanner": {"enabled": true},
+      "printer": {"enabled": true}
+    },
+    "workflow_configuration": {
+      "loyalty_program_enabled": true,
+      "offline_mode_enabled": true
+    }
+  }
+]
+
